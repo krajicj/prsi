@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prší - Pro děti</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Settings Panel -->
+        <div id="settings-panel" class="panel">
+            <h2>Nastavení hry</h2>
+            <div class="setting-item">
+                <label class="switch">
+                    <input type="checkbox" id="child-mode-toggle" checked>
+                    <span class="slider round"></span>
+                </label>
+                <span>Dětský režim (jednoduchý)</span>
+            </div>
+            <div id="advanced-settings" class="hidden">
+                <div class="setting-item">
+                    <label class="switch">
+                        <input type="checkbox" id="ace-skips-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <span>Eso staví</span>
+                </div>
+                <div class="setting-item">
+                    <label class="switch">
+                        <input type="checkbox" id="seven-draws-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <span>Sedma bere dvě</span>
+                </div>
+                <div class="setting-item">
+                    <label class="switch">
+                        <input type="checkbox" id="stacking-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <span>Přebíjení</span>
+                </div>
+                <div class="setting-item">
+                    <label class="switch">
+                        <input type="checkbox" id="jack-changes-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <span>Svršek mění barvu</span>
+                </div>
+            </div>
+            <button id="start-game-btn" class="big-button">Hrát!</button>
+        </div>
+
+        <!-- Main Game Board -->
+        <div id="game-board" class="hidden">
+            <div id="opponent-area">
+                <div class="player-info">Počítač</div>
+                <div id="opponent-hand" class="hand"></div>
+            </div>
+
+            <div id="center-area">
+                <div id="draw-pile" class="pile">
+                    <div class="card-back"></div>
+                    <div id="draw-count">32</div>
+                </div>
+                <div id="discard-pile" class="pile">
+                    <!-- Top card goes here -->
+                </div>
+                
+                <div id="suit-picker" class="hidden">
+                    <div class="picker-title">Vyber barvu:</div>
+                    <div class="color-options">
+                        <button class="color-btn hearts" data-suit="hearts"></button>
+                        <button class="color-btn leaves" data-suit="leaves"></button>
+                        <button class="color-btn bells" data-suit="bells"></button>
+                        <button class="color-btn acorns" data-suit="acorns"></button>
+                    </div>
+                </div>
+
+                <div id="game-status">
+                    <div id="current-suit-indicator" class="hidden">
+                        Hraje se: <span id="active-suit-icon"></span>
+                    </div>
+                    <div id="turn-message">Na řadě jsi ty!</div>
+                </div>
+            </div>
+
+            <div id="player-area">
+                <div id="player-hand" class="hand"></div>
+                <div id="player-actions">
+                    <button id="draw-btn" class="big-button">Líznout</button>
+                </div>
+            </div>
+            
+            <button id="menu-btn">⚙️</button>
+        </div>
+
+        <!-- Win/Loss Screen -->
+        <div id="overlay" class="hidden">
+            <div id="result-message"></div>
+            <button id="restart-btn" class="big-button">Nová hra</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
