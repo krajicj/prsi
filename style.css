@@ -4,7 +4,7 @@
     --primary-hover: #45a049;
     --danger-color: #f44336;
     --card-width: 120px;
-    --card-height: 180px;
+    --card-height: 190px;
     --card-radius: 12px;
     
     /* Card Suits */
@@ -188,23 +188,21 @@ input:checked + .slider:before {
 .card {
     width: var(--card-width);
     height: var(--card-height);
-    background: white;
+    background-color: white;
     border-radius: var(--card-radius);
     border: 2px solid #ddd;
     box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 10px;
-    box-sizing: border-box;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
-    margin-left: -40px;
+    margin: 0 5px;
     position: relative;
+    background-image: url('assets/karty.png');
+    background-size: 960px 760px; /* 120px * 8 cols, 190px * 4 rows */
+    background-repeat: no-repeat;
 }
 
 .card:first-child {
-    margin-left: 0;
+    margin-left: 5px;
 }
 
 .card:hover {
@@ -215,12 +213,31 @@ input:checked + .slider:before {
 .card.playable {
     border: 4px solid var(--primary-color);
     box-shadow: 0 0 15px var(--primary-color);
+    transform: translateY(-10px);
 }
 
 .card.dimmed {
-    opacity: 0.6;
+    opacity: 0.8;
+    filter: grayscale(0.3);
     cursor: not-allowed;
 }
+
+/* Suit & Value positions (Based on 960x760 scaled image) */
+/* Each card is exactly 120x190 pixels */
+
+.card.suit-bells { background-position-y: 0; }
+.card.suit-hearts { background-position-y: -190px; }
+.card.suit-leaves { background-position-y: -380px; }
+.card.suit-acorns { background-position-y: -570px; }
+
+.card.val-7 { background-position-x: 0; }
+.card.val-8 { background-position-x: -120px; }
+.card.val-9 { background-position-x: -240px; }
+.card.val-10 { background-position-x: -360px; }
+.card.val-spodek { background-position-x: -480px; }
+.card.val-svrsek { background-position-x: -600px; }
+.card.val-king { background-position-x: -720px; }
+.card.val-ace { background-position-x: -840px; }
 
 .card-back {
     width: 100%;
@@ -230,21 +247,11 @@ input:checked + .slider:before {
     border-radius: var(--card-radius);
     border: 4px solid white;
     box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
 }
-
-.card-suit {
-    font-size: 2rem;
-}
-
-.card-value {
-    font-size: 1.5rem;
-    font-weight: bold;
-}
-
-.hearts { color: var(--hearts-color); }
-.leaves { color: var(--leaves-color); }
-.bells { color: var(--bells-color); }
-.acorns { color: var(--acorns-color); }
 
 /* Suit picker */
 #suit-picker {

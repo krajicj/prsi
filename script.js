@@ -10,9 +10,9 @@
 
 // --- Constants & Configuration ---
 const SUITS = [
+    { id: 'bells', symbol: '🔔', label: 'Kule' },
     { id: 'hearts', symbol: '♥️', label: 'Srdce' },
     { id: 'leaves', symbol: '🍃', label: 'Listy' },
-    { id: 'bells', symbol: '🔔', label: 'Kule' },
     { id: 'acorns', symbol: '🌰', label: 'Žaludy' }
 ];
 
@@ -21,10 +21,10 @@ const VALUES = [
     { id: '8', label: '8' },
     { id: '9', label: '9' },
     { id: '10', label: '10' },
-    { id: 'jack', label: 'S' }, // Svršek
-    { id: 'queen', label: 'F' }, // Filek
-    { id: 'king', label: 'K' },
-    { id: 'ace', label: 'A' }
+    { id: 'spodek', label: 'Spodek' },
+    { id: 'svrsek', label: 'Svršek' },
+    { id: 'king', label: 'Král' },
+    { id: 'ace', label: 'Eso' }
 ];
 
 // --- Game State ---
@@ -197,7 +197,7 @@ function playCard(card) {
         } else if (state.rules.aceSkips && card.value === 'ace') {
             state.effectStack.skips += 1;
             effectTriggered = true;
-        } else if (state.rules.jackChanges && card.value === 'jack') {
+        } else if (state.rules.jackChanges && card.value === 'svrsek') {
             if (state.currentTurn === 'player') {
                 state.waitingForSuitSelection = true;
                 elements.suitPicker.classList.remove('hidden');
@@ -309,8 +309,8 @@ function isValidMove(card) {
         }
     }
 
-    // Jack can usually be played on anything unless rules say otherwise
-    if (!state.rules.childMode && state.rules.jackChanges && card.value === 'jack') {
+    // Svršek can usually be played on anything unless rules say otherwise
+    if (!state.rules.childMode && state.rules.jackChanges && card.value === 'svrsek') {
         return true;
     }
 
@@ -408,7 +408,7 @@ function updateUI() {
         elements.activeSuitIndicator.classList.remove('hidden');
         const suitData = SUITS.find(s => s.id === state.activeSuit);
         elements.activeSuitIcon.innerText = suitData.symbol + ' ' + suitData.label;
-        elements.activeSuitIcon.className = suitIdToClassName(state.activeSuit);
+        elements.activeSuitIcon.className = `suit-${state.activeSuit}`;
     } else {
         elements.activeSuitIndicator.classList.add('hidden');
     }
@@ -416,21 +416,8 @@ function updateUI() {
 
 function createCardElement(card) {
     const cardEl = document.createElement('div');
-    cardEl.className = `card ${suitIdToClassName(card.suit)}`;
-    
-    const suitSymbol = SUITS.find(s => s.id === card.suit).symbol;
-    
-    cardEl.innerHTML = `
-        <div class="card-value">${card.label}</div>
-        <div class="card-suit">${suitSymbol}</div>
-        <div class="card-value" style="transform: rotate(180deg)">${card.label}</div>
-    `;
-    
+    cardEl.className = `card suit-${card.suit} val-${card.value}`;
     return cardEl;
-}
-
-function suitIdToClassName(id) {
-    return id; // matches SUITS[].id and CSS classes
 }
 
 function checkWin() {
