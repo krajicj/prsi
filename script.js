@@ -81,10 +81,12 @@ function init() {
     document.getElementById('child-mode-toggle').addEventListener('change', (e) => {
         state.rules.childMode = e.target.checked;
         if (state.rules.childMode) {
-            elements.advancedSettings.classList.add('hidden');
+            // Reset to Child Mode defaults
+            document.getElementById('ace-skips-toggle').checked = false;
+            document.getElementById('seven-draws-toggle').checked = false;
+            document.getElementById('stacking-toggle').checked = false;
+            document.getElementById('jack-changes-toggle').checked = false;
             document.getElementById('show-opponent-cards-toggle').checked = true;
-        } else {
-            elements.advancedSettings.classList.remove('hidden');
         }
     });
 
@@ -106,20 +108,11 @@ function init() {
 function startGame() {
     // Update rules from UI
     state.rules.childMode = document.getElementById('child-mode-toggle').checked;
-    if (!state.rules.childMode) {
-        state.rules.aceSkips = document.getElementById('ace-skips-toggle').checked;
-        state.rules.sevenDraws = document.getElementById('seven-draws-toggle').checked;
-        state.rules.stacking = document.getElementById('stacking-toggle').checked;
-        state.rules.jackChanges = document.getElementById('jack-changes-toggle').checked;
-        state.rules.showOpponentCards = document.getElementById('show-opponent-cards-toggle').checked;
-    } else {
-        // Reset rules for child mode
-        state.rules.aceSkips = false;
-        state.rules.sevenDraws = false;
-        state.rules.stacking = false;
-        state.rules.jackChanges = false;
-        state.rules.showOpponentCards = document.getElementById('show-opponent-cards-toggle').checked;
-    }
+    state.rules.aceSkips = document.getElementById('ace-skips-toggle').checked;
+    state.rules.sevenDraws = document.getElementById('seven-draws-toggle').checked;
+    state.rules.stacking = document.getElementById('stacking-toggle').checked;
+    state.rules.jackChanges = document.getElementById('jack-changes-toggle').checked;
+    state.rules.showOpponentCards = document.getElementById('show-opponent-cards-toggle').checked;
 
     // Reset State
     state.deck = createDeck();
