@@ -42,7 +42,8 @@ let state = {
         aceSkips: false,
         sevenDraws: false,
         stacking: false,
-        jackChanges: false
+        jackChanges: false,
+        showOpponentCards: true
     },
     effectStack: {
         drawCount: 0,
@@ -72,11 +73,16 @@ const elements = {
 
 // --- Initialization ---
 function init() {
+    // Set initial toggle states
+    document.getElementById('child-mode-toggle').checked = true;
+    document.getElementById('show-opponent-cards-toggle').checked = true;
+
     // Event Listeners for Toggles
     document.getElementById('child-mode-toggle').addEventListener('change', (e) => {
         state.rules.childMode = e.target.checked;
         if (state.rules.childMode) {
             elements.advancedSettings.classList.add('hidden');
+            document.getElementById('show-opponent-cards-toggle').checked = true;
         } else {
             elements.advancedSettings.classList.remove('hidden');
         }
@@ -105,12 +111,14 @@ function startGame() {
         state.rules.sevenDraws = document.getElementById('seven-draws-toggle').checked;
         state.rules.stacking = document.getElementById('stacking-toggle').checked;
         state.rules.jackChanges = document.getElementById('jack-changes-toggle').checked;
+        state.rules.showOpponentCards = document.getElementById('show-opponent-cards-toggle').checked;
     } else {
         // Reset rules for child mode
         state.rules.aceSkips = false;
         state.rules.sevenDraws = false;
         state.rules.stacking = false;
         state.rules.jackChanges = false;
+        state.rules.showOpponentCards = document.getElementById('show-opponent-cards-toggle').checked;
     }
 
     // Reset State
@@ -170,6 +178,40 @@ function shuffle(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
 }
+function animateCardMovement(sourceEl, targetEl, card, onComplete) {
+    const sourceRect = sourceEl.getBoundingClientRect();
+    const targetRect = targetEl.getBoundingClientRect();
+
+    // Create a clone for animation
+    const flyer = document.createElement('div');
+    // Always use the card's suit and value for the animation flyer
+    flyer.className = `flying-card suit-${card.suit} val-${card.value}`;
+    flyer.innerHTML = ''; // Ensure no card-back is inside
+    
+    // Set initial position
+    flyer.style.width = sourceRect.width + 'px';
+    flyer.style.height = sourceRect.height + 'px';
+    flyer.style.left = sourceRect.left + 'px';
+    flyer.style.top = sourceRect.top + 'px';
+    
+    document.body.appendChild(flyer);
+
+    // Hide original element immediately
+    sourceEl.style.visibility = 'hidden';
+
+    // Force reflow
+    flyer.offsetWidth;
+
+    // Set target position and rotation, and scale up slightly
+    flyer.style.left = targetRect.left + 'px';
+    flyer.style.top = targetRect.top + 'px';
+    flyer.style.transform = `rotate(${Math.random() * 20 - 10}deg) scale(1.1)`;
+
+    flyer.addEventListener('transitionend', () => {
+        flyer.remove();
+        if (onComplete) onComplete();
+    }, { once: true });
+}
 
 // --- Gameplay ---
 function handlePlayCard(cardIndex) {
@@ -177,26 +219,28 @@ function handlePlayCard(cardIndex) {
 
     const card = state.playerHand[cardIndex];
     if (isValidMove(card)) {
-        // Remove from hand
-        state.playerHand.splice(cardIndex, 1);
-        playCard(card);
+        const cardElements = elements.playerHand.querySelectorAll('.card');
+        const sourceEl = cardElements[cardIndex];
+
+        // Start animation
+        animateCardMovement(sourceEl, elements.discardPile, card, () => {
+            // Remove from hand and finish play after animation
+            state.playerHand.splice(cardIndex, 1);
+            playCard(card);
+        });
     }
 }
 
 function playCard(card) {
     state.discardPile.push(card);
     state.activeSuit = card.suit;
-    
-    // Apply special rules
-    let effectTriggered = false;
 
+    // Apply special rules
     if (!state.rules.childMode) {
         if (state.rules.sevenDraws && card.value === '7') {
             state.effectStack.drawCount += 2;
-            effectTriggered = true;
         } else if (state.rules.aceSkips && card.value === 'ace') {
             state.effectStack.skips += 1;
-            effectTriggered = true;
         } else if (state.rules.jackChanges && card.value === 'svrsek') {
             if (state.currentTurn === 'player') {
                 state.waitingForSuitSelection = true;
@@ -216,6 +260,41 @@ function playCard(card) {
 
     // Next turn
     endTurn();
+}
+
+function opponentTurn() {
+    if (state.currentTurn !== 'opponent' || state.isGameOver) return;
+
+    const playableIndices = [];
+    state.opponentHand.forEach((card, index) => {
+        if (isValidMove(card)) {
+            playableIndices.push(index);
+        }
+    });
+
+    if (playableIndices.length > 0) {
+        // AI plays a card
+        const index = playableIndices[Math.floor(Math.random() * playableIndices.length)];
+        const card = state.opponentHand[index];
+        
+        // Find the actual card elements in the DOM
+        const cardEls = elements.opponentHand.querySelectorAll('.card');
+        const sourceEl = cardEls[index];
+
+        if (sourceEl) {
+            animateCardMovement(sourceEl, elements.discardPile, card, () => {
+                // Now remove from hand and finish play
+                state.opponentHand.splice(index, 1);
+                playCard(card);
+            });
+        } else {
+            state.opponentHand.splice(index, 1);
+            playCard(card);
+        }
+    } else {
+        // AI draws
+        handleDraw('opponent');
+    }
 }
 
 function handleDraw(who) {
@@ -359,12 +438,16 @@ function updateUI() {
         elements.playerHand.appendChild(cardEl);
     });
 
-    // Render Opponent Hand (facedown)
+    // Render Opponent Hand
     elements.opponentHand.innerHTML = '';
-    state.opponentHand.forEach(() => {
+    state.opponentHand.forEach((card) => {
         const cardEl = document.createElement('div');
-        cardEl.className = 'card';
-        cardEl.innerHTML = '<div class="card-back"></div>';
+        if (state.rules.showOpponentCards) {
+            cardEl.className = `card suit-${card.suit} val-${card.value}`;
+        } else {
+            cardEl.className = 'card';
+            cardEl.innerHTML = '<div class="card-back"></div>';
+        }
         elements.opponentHand.appendChild(cardEl);
     });
 

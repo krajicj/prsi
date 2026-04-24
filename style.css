@@ -286,19 +286,33 @@ input:checked + .slider:before {
 /* Suit & Value positions (Based on 960x760 scaled image) */
 /* Each card is exactly 120x190 pixels */
 
-.card.suit-bells { background-position-y: 0; }
-.card.suit-hearts { background-position-y: -190px; }
-.card.suit-leaves { background-position-y: -380px; }
-.card.suit-acorns { background-position-y: -570px; }
+.suit-bells { background-position-y: 0 !important; }
+.suit-hearts { background-position-y: -190px !important; }
+.suit-leaves { background-position-y: -380px !important; }
+.suit-acorns { background-position-y: -570px !important; }
 
-.card.val-7 { background-position-x: 0; }
-.card.val-8 { background-position-x: -120px; }
-.card.val-9 { background-position-x: -240px; }
-.card.val-10 { background-position-x: -360px; }
-.card.val-spodek { background-position-x: -480px; }
-.card.val-svrsek { background-position-x: -600px; }
-.card.val-king { background-position-x: -720px; }
-.card.val-ace { background-position-x: -840px; }
+.val-7 { background-position-x: 0 !important; }
+.val-8 { background-position-x: -120px !important; }
+.val-9 { background-position-x: -240px !important; }
+.val-10 { background-position-x: -360px !important; }
+.val-spodek { background-position-x: -480px !important; }
+.val-svrsek { background-position-x: -600px !important; }
+.val-king { background-position-x: -720px !important; }
+.val-ace { background-position-x: -840px !important; }
+
+@media (max-height: 600px), (max-width: 800px) {
+    .suit-hearts { background-position-y: -126px !important; }
+    .suit-leaves { background-position-y: -252px !important; }
+    .suit-acorns { background-position-y: -378px !important; }
+
+    .val-8 { background-position-x: -80px !important; }
+    .val-9 { background-position-x: -160px !important; }
+    .val-10 { background-position-x: -240px !important; }
+    .val-spodek { background-position-x: -320px !important; }
+    .val-svrsek { background-position-x: -400px !important; }
+    .val-king { background-position-x: -480px !important; }
+    .val-ace { background-position-x: -560px !important; }
+}
 
 .card-back {
     width: 100%;
@@ -417,10 +431,21 @@ input:checked + .slider:before {
 }
 
 /* Animations */
-.card-dealing {
-    animation: deal 0.5s ease-out forwards;
+.flying-card {
+    position: fixed;
+    z-index: 1000;
+    pointer-events: none;
+    transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    background-image: url('assets/karty.png');
+    background-size: 960px 760px;
+    background-repeat: no-repeat;
+    border-radius: var(--card-radius);
+    border: 2px solid #ddd;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
 }
 
-@keyframes deal {
-    from { transform: translate(-500px, -500px) rotate(0); }
+@media (max-height: 600px), (max-width: 800px) {
+    .flying-card {
+        background-size: 640px 504px;
+    }
 }
