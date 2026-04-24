@@ -21,6 +21,48 @@ body {
     background-color: var(--bg-color);
     overflow: hidden;
     user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none; /* Disable long-press menu on mobile */
+}
+
+/* ... existing styles ... */
+
+@media (max-height: 600px), (max-width: 800px) {
+    :root {
+        --card-width: 80px;
+        --card-height: 126px;
+    }
+    
+    #center-area {
+        gap: 20px;
+    }
+    
+    .big-button {
+        padding: 10px 25px;
+        font-size: 1.1rem;
+    }
+
+    #draw-btn {
+        font-size: 1rem;
+        min-width: 80px;
+    }
+    
+    .card {
+        background-size: 640px 504px; /* Scaled down 8x and 4x */
+    }
+    
+    /* Reposition card offsets for smaller size */
+    .card.suit-hearts { background-position-y: -126px; }
+    .card.suit-leaves { background-position-y: -252px; }
+    .card.suit-acorns { background-position-y: -378px; }
+
+    .card.val-8 { background-position-x: -80px; }
+    .card.val-9 { background-position-x: -160px; }
+    .card.val-10 { background-position-x: -240px; }
+    .card.val-spodek { background-position-x: -320px; }
+    .card.val-svrsek { background-position-x: -400px; }
+    .card.val-king { background-position-x: -480px; }
+    .card.val-ace { background-position-x: -560px; }
 }
 
 #game-container {
@@ -156,32 +198,51 @@ input:checked + .slider:before {
 
 #center-area {
     display: flex;
+    flex-direction: row; /* Side by side for pile and deck */
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    position: relative;
+    width: 100%;
+}
+
+#draw-pile-container {
+    display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    position: relative;
+    gap: 10px;
 }
 
 .pile {
     width: var(--card-width);
     height: var(--card-height);
     position: relative;
+    touch-action: manipulation;
 }
 
 #draw-pile {
     cursor: pointer;
-    position: absolute;
-    left: -150px;
-    top: 0;
+}
+
+#draw-btn {
+    margin-top: 5px;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    min-width: 120px;
+    touch-action: manipulation;
 }
 
 #draw-count {
     position: absolute;
-    bottom: -25px;
-    width: 100%;
-    text-align: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     font-weight: bold;
-    color: #555;
+    color: white;
+    background: rgba(0,0,0,0.5);
+    padding: 2px 8px;
+    border-radius: 10px;
+    pointer-events: none;
 }
 
 /* Card Styling */

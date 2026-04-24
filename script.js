@@ -422,15 +422,15 @@ function createCardElement(card) {
 
 function checkWin() {
     if (state.playerHand.length === 0) {
-        showResult('Vyhrála jsi! 🎉');
+        showResult('<span style="color: #4caf50">Vyhrála jsi! 🟢😊🎉</span>');
     } else if (state.opponentHand.length === 0) {
-        showResult('Počítač vyhrál. Zkus to znovu!');
+        showResult('<span style="color: #f44336">Počítač vyhrál. 🔴☹️</span>');
     }
 }
 
 function showResult(message) {
     state.isGameOver = true;
-    elements.resultMessage.innerText = message;
+    elements.resultMessage.innerHTML = message;
     elements.overlay.classList.remove('hidden');
 }
 
