@@ -1,11 +1,5 @@
 /**
  * Prší - Game for a 3-year old girl
- * 
- * Game Rules Summary:
- * - 32 cards (4 suits: hearts, leaves, bells, acorns)
- * - Values: 7, 8, 9, 10, Jack (Svršek), Queen (Filek), King, Ace
- * - Player vs AI
- * - Goal: Be the first to have no cards.
  */
 
 // --- Constants & Configuration ---
@@ -34,8 +28,8 @@ let state = {
     discardPile: [],
     playerHand: [],
     opponentHand: [],
-    currentTurn: 'player', // 'player' or 'opponent'
-    activeSuit: null, // For Jack change
+    currentTurn: 'player', 
+    activeSuit: null,
     isGameOver: false,
     rules: {
         childMode: true,
@@ -73,15 +67,12 @@ const elements = {
 
 // --- Initialization ---
 function init() {
-    // Set initial toggle states
     document.getElementById('child-mode-toggle').checked = true;
     document.getElementById('show-opponent-cards-toggle').checked = true;
 
-    // Event Listeners for Toggles
     document.getElementById('child-mode-toggle').addEventListener('change', (e) => {
         state.rules.childMode = e.target.checked;
         if (state.rules.childMode) {
-            // Reset to Child Mode defaults
             document.getElementById('ace-skips-toggle').checked = false;
             document.getElementById('seven-draws-toggle').checked = false;
             document.getElementById('stacking-toggle').checked = false;
@@ -99,14 +90,12 @@ function init() {
         elements.settingsPanel.classList.remove('hidden');
     });
 
-    // Suit picker buttons
     document.querySelectorAll('.color-btn').forEach(btn => {
         btn.addEventListener('click', () => selectSuit(btn.dataset.suit));
     });
 }
 
 function startGame() {
-    // Update rules from UI
     state.rules.childMode = document.getElementById('child-mode-toggle').checked;
     state.rules.aceSkips = document.getElementById('ace-skips-toggle').checked;
     state.rules.sevenDraws = document.getElementById('seven-draws-toggle').checked;
@@ -114,7 +103,6 @@ function startGame() {
     state.rules.jackChanges = document.getElementById('jack-changes-toggle').checked;
     state.rules.showOpponentCards = document.getElementById('show-opponent-cards-toggle').checked;
 
-    // Reset State
     state.deck = createDeck();
     shuffle(state.deck);
     state.playerHand = [];
@@ -127,20 +115,15 @@ function startGame() {
     state.effectStack = { drawCount: 0, skips: 0 };
     state.waitingForSuitSelection = false;
 
-    // Deal cards (4 each)
     for (let i = 0; i < 4; i++) {
         state.playerHand.push(state.drawPile.pop());
         state.opponentHand.push(state.drawPile.pop());
     }
 
-    // First card on discard pile
     let firstCard = state.drawPile.pop();
-    // In Prší, the first card cannot be special if it would affect the first player immediately
-    // For simplicity, we just put it there.
     state.discardPile.push(firstCard);
     state.activeSuit = firstCard.suit;
 
-    // UI Updates
     elements.settingsPanel.classList.add('hidden');
     elements.overlay.classList.add('hidden');
     elements.gameBoard.classList.remove('hidden');
@@ -149,17 +132,11 @@ function startGame() {
     updateUI();
 }
 
-// --- Card Logic ---
 function createDeck() {
     const deck = [];
     SUITS.forEach(suit => {
         VALUES.forEach(value => {
-            deck.push({
-                suit: suit.id,
-                value: value.id,
-                symbol: suit.symbol,
-                label: value.label
-            });
+            deck.push({ suit: suit.id, value: value.id, symbol: suit.symbol, label: value.label });
         });
     });
     return deck;
@@ -171,39 +148,43 @@ function shuffle(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
 }
+
 function animateCardMovement(sourceEl, targetEl, card, onComplete) {
     const sourceRect = sourceEl.getBoundingClientRect();
     const targetRect = targetEl.getBoundingClientRect();
 
-    // Create a clone for animation
     const flyer = document.createElement('div');
-    // Always use the card's suit and value for the animation flyer
     flyer.className = `flying-card suit-${card.suit} val-${card.value}`;
-    flyer.innerHTML = ''; // Ensure no card-back is inside
+    flyer.innerHTML = ''; 
     
-    // Set initial position
     flyer.style.width = sourceRect.width + 'px';
     flyer.style.height = sourceRect.height + 'px';
     flyer.style.left = sourceRect.left + 'px';
     flyer.style.top = sourceRect.top + 'px';
+    flyer.style.margin = '0';
+    flyer.style.transition = 'none';
+    flyer.style.zIndex = '9999';
     
     document.body.appendChild(flyer);
-
-    // Hide original element immediately
     sourceEl.style.visibility = 'hidden';
 
-    // Force reflow
-    flyer.offsetWidth;
+    setTimeout(() => {
+        flyer.style.transition = 'all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)';
+        flyer.style.left = targetRect.left + 'px';
+        flyer.style.top = targetRect.top + 'px';
+        flyer.style.transform = `rotate(${Math.random() * 20 - 10}deg) scale(1.1)`;
+    }, 20);
 
-    // Set target position and rotation, and scale up slightly
-    flyer.style.left = targetRect.left + 'px';
-    flyer.style.top = targetRect.top + 'px';
-    flyer.style.transform = `rotate(${Math.random() * 20 - 10}deg) scale(1.1)`;
-
-    flyer.addEventListener('transitionend', () => {
+    let finished = false;
+    const finish = () => {
+        if (finished) return;
+        finished = true;
         flyer.remove();
         if (onComplete) onComplete();
-    }, { once: true });
+    };
+
+    flyer.addEventListener('transitionend', finish, { once: true });
+    setTimeout(finish, 800); 
 }
 
 // --- Gameplay ---
@@ -212,15 +193,18 @@ function handlePlayCard(cardIndex) {
 
     const card = state.playerHand[cardIndex];
     if (isValidMove(card)) {
-        const cardElements = elements.playerHand.querySelectorAll('.card');
-        const sourceEl = cardElements[cardIndex];
+        const cardEls = elements.playerHand.querySelectorAll('.card');
+        const sourceEl = cardEls[cardIndex];
 
-        // Start animation
-        animateCardMovement(sourceEl, elements.discardPile, card, () => {
-            // Remove from hand and finish play after animation
+        if (sourceEl) {
+            animateCardMovement(sourceEl, elements.discardPile, card, () => {
+                state.playerHand.splice(cardIndex, 1);
+                playCard(card);
+            });
+        } else {
             state.playerHand.splice(cardIndex, 1);
             playCard(card);
-        });
+        }
     }
 }
 
@@ -228,7 +212,6 @@ function playCard(card) {
     state.discardPile.push(card);
     state.activeSuit = card.suit;
 
-    // Apply special rules
     if (!state.rules.childMode) {
         if (state.rules.sevenDraws && card.value === '7') {
             state.effectStack.drawCount += 2;
@@ -239,20 +222,15 @@ function playCard(card) {
                 state.waitingForSuitSelection = true;
                 elements.suitPicker.classList.remove('hidden');
                 updateUI();
-                return; // Wait for user to pick suit
+                return;
             } else {
-                // AI chooses suit
-                const randomSuit = SUITS[Math.floor(Math.random() * SUITS.length)].id;
-                state.activeSuit = randomSuit;
+                state.activeSuit = SUITS[Math.floor(Math.random() * SUITS.length)].id;
             }
         }
     }
 
     checkWin();
-    if (state.isGameOver) return;
-
-    // Next turn
-    endTurn();
+    if (!state.isGameOver) endTurn();
 }
 
 function opponentTurn() {
@@ -260,23 +238,17 @@ function opponentTurn() {
 
     const playableIndices = [];
     state.opponentHand.forEach((card, index) => {
-        if (isValidMove(card)) {
-            playableIndices.push(index);
-        }
+        if (isValidMove(card)) playableIndices.push(index);
     });
 
     if (playableIndices.length > 0) {
-        // AI plays a card
         const index = playableIndices[Math.floor(Math.random() * playableIndices.length)];
         const card = state.opponentHand[index];
-        
-        // Find the actual card elements in the DOM
         const cardEls = elements.opponentHand.querySelectorAll('.card');
         const sourceEl = cardEls[index];
 
         if (sourceEl) {
             animateCardMovement(sourceEl, elements.discardPile, card, () => {
-                // Now remove from hand and finish play
                 state.opponentHand.splice(index, 1);
                 playCard(card);
             });
@@ -285,7 +257,6 @@ function opponentTurn() {
             playCard(card);
         }
     } else {
-        // AI draws
         handleDraw('opponent');
     }
 }
@@ -293,37 +264,27 @@ function opponentTurn() {
 function handleDraw(who) {
     if (state.currentTurn !== who || state.isGameOver || state.waitingForSuitSelection) return;
 
-    // If there's an active penalty (draw 2 from sevens)
     if (state.effectStack.drawCount > 0) {
-        for (let i = 0; i < state.effectStack.drawCount; i++) {
-            drawOne(who);
-        }
+        for (let i = 0; i < state.effectStack.drawCount; i++) drawOne(who);
         state.effectStack.drawCount = 0;
         endTurn();
     } else {
-        // Normal draw
         drawOne(who);
-        // After normal draw, turn always ends
         endTurn();
     }
 }
 
 function drawOne(who) {
     if (state.drawPile.length === 0) {
-        // Reshuffle discard pile back to draw pile
         const topCard = state.discardPile.pop();
         state.drawPile = [...state.discardPile];
         shuffle(state.drawPile);
         state.discardPile = [topCard];
     }
-
     if (state.drawPile.length > 0) {
         const card = state.drawPile.pop();
-        if (who === 'player') {
-            state.playerHand.push(card);
-        } else {
-            state.opponentHand.push(card);
-        }
+        if (who === 'player') state.playerHand.push(card);
+        else state.opponentHand.push(card);
     }
     updateUI();
 }
@@ -331,24 +292,17 @@ function drawOne(who) {
 function endTurn() {
     if (state.isGameOver) return;
 
-    // Check for skips
     if (state.effectStack.skips > 0) {
         state.effectStack.skips--;
-        // Turn stays the same but effect consumed
-        // (Visual feedback would be good here)
         updateUI();
-        if (state.currentTurn === 'opponent') {
-            setTimeout(opponentTurn, 1000);
-        }
+        if (state.currentTurn === 'opponent') setTimeout(opponentTurn, 1500);
         return;
     }
 
     state.currentTurn = state.currentTurn === 'player' ? 'opponent' : 'player';
     updateUI();
 
-    if (state.currentTurn === 'opponent') {
-        setTimeout(opponentTurn, 1000);
-    }
+    if (state.currentTurn === 'opponent') setTimeout(opponentTurn, 1500);
 }
 
 function selectSuit(suitId) {
@@ -356,121 +310,51 @@ function selectSuit(suitId) {
     state.waitingForSuitSelection = false;
     elements.suitPicker.classList.add('hidden');
     checkWin();
-    if (!state.isGameOver) {
-        endTurn();
-    }
+    if (!state.isGameOver) endTurn();
 }
 
 function isValidMove(card) {
     const topCard = state.discardPile[state.discardPile.length - 1];
-    
-    // If there's a penalty pending
-    if (state.effectStack.drawCount > 0) {
-        if (state.rules.stacking) {
-            return card.value === '7';
-        } else {
-            return false; // Must draw if stacking is off
-        }
-    }
-
-    if (state.effectStack.skips > 0) {
-        if (state.rules.stacking) {
-            return card.value === 'ace';
-        } else {
-            return false; // Must skip if stacking is off
-        }
-    }
-
-    // Svršek can usually be played on anything unless rules say otherwise
-    if (!state.rules.childMode && state.rules.jackChanges && card.value === 'svrsek') {
-        return true;
-    }
-
-    // Normal move
+    if (state.effectStack.drawCount > 0) return state.rules.stacking && card.value === '7';
+    if (state.effectStack.skips > 0) return state.rules.stacking && card.value === 'ace';
+    if (!state.rules.childMode && state.rules.jackChanges && card.value === 'svrsek') return true;
     return card.suit === state.activeSuit || card.value === topCard.value;
 }
 
-// --- AI Logic ---
-function opponentTurn() {
-    if (state.currentTurn !== 'opponent' || state.isGameOver) return;
-
-    const playableIndices = [];
-    state.opponentHand.forEach((card, index) => {
-        if (isValidMove(card)) {
-            playableIndices.push(index);
-        }
-    });
-
-    if (playableIndices.length > 0) {
-        // AI plays a card
-        // Simple strategy: play first valid card
-        const index = playableIndices[0];
-        const card = state.opponentHand.splice(index, 1)[0];
-        playCard(card);
-    } else {
-        // AI draws
-        handleDraw('opponent');
-    }
-}
-
-// --- UI Logic ---
 function updateUI() {
-    // Render Player Hand
     elements.playerHand.innerHTML = '';
     state.playerHand.forEach((card, index) => {
         const cardEl = createCardElement(card);
-        const playable = (state.currentTurn === 'player' && isValidMove(card) && !state.waitingForSuitSelection);
-        
-        if (playable) {
-            cardEl.classList.add('playable');
-        } else if (state.currentTurn === 'player') {
-            cardEl.classList.add('dimmed');
-        }
-        
+        if (state.currentTurn === 'player' && isValidMove(card) && !state.waitingForSuitSelection) cardEl.classList.add('playable');
+        else if (state.currentTurn === 'player') cardEl.classList.add('dimmed');
         cardEl.addEventListener('click', () => handlePlayCard(index));
         elements.playerHand.appendChild(cardEl);
     });
 
-    // Render Opponent Hand
     elements.opponentHand.innerHTML = '';
     state.opponentHand.forEach((card) => {
         const cardEl = document.createElement('div');
-        if (state.rules.showOpponentCards) {
-            cardEl.className = `card suit-${card.suit} val-${card.value}`;
-        } else {
+        if (state.rules.showOpponentCards) cardEl.className = `card suit-${card.suit} val-${card.value}`;
+        else {
             cardEl.className = 'card';
             cardEl.innerHTML = '<div class="card-back"></div>';
         }
         elements.opponentHand.appendChild(cardEl);
     });
 
-    // Render Discard Pile (top card)
     elements.discardPile.innerHTML = '';
     if (state.discardPile.length > 0) {
-        const topCard = state.discardPile[state.discardPile.length - 1];
-        const cardEl = createCardElement(topCard);
-        elements.discardPile.appendChild(cardEl);
+        elements.discardPile.appendChild(createCardElement(state.discardPile[state.discardPile.length - 1]));
     }
 
-    // Draw Pile
     elements.drawCount.innerText = state.drawPile.length;
-
-    // Draw Button Highlight
     const canDraw = (state.currentTurn === 'player' && !state.waitingForSuitSelection);
-    const mustDraw = canDraw && !state.playerHand.some(c => isValidMove(c));
-    
-    if (state.rules.childMode && canDraw) {
-        elements.drawBtn.classList.add('playable');
-    } else if (mustDraw) {
-        elements.drawBtn.classList.add('playable');
-    } else {
-        elements.drawBtn.classList.remove('playable');
-    }
+    if (state.rules.childMode && canDraw) elements.drawBtn.classList.add('playable');
+    else if (canDraw && !state.playerHand.some(c => isValidMove(c))) elements.drawBtn.classList.add('playable');
+    else elements.drawBtn.classList.remove('playable');
 
-    // Turn Message
-    if (state.waitingForSuitSelection) {
-        elements.turnMessage.innerText = 'Vyber si novou barvu!';
-    } else if (state.currentTurn === 'player') {
+    if (state.waitingForSuitSelection) elements.turnMessage.innerText = 'Vyber si novou barvu!';
+    else if (state.currentTurn === 'player') {
         elements.turnMessage.innerText = 'Na řadě jsi ty!';
         elements.turnMessage.style.color = '#2e7d32';
     } else {
@@ -478,16 +362,13 @@ function updateUI() {
         elements.turnMessage.style.color = '#c62828';
     }
 
-    // Active Suit Indicator (if it's different from top card suit due to Jack)
     const topCard = state.discardPile[state.discardPile.length - 1];
     if (topCard && state.activeSuit !== topCard.suit) {
         elements.activeSuitIndicator.classList.remove('hidden');
         const suitData = SUITS.find(s => s.id === state.activeSuit);
         elements.activeSuitIcon.innerText = suitData.symbol + ' ' + suitData.label;
         elements.activeSuitIcon.className = `suit-${state.activeSuit}`;
-    } else {
-        elements.activeSuitIndicator.classList.add('hidden');
-    }
+    } else elements.activeSuitIndicator.classList.add('hidden');
 }
 
 function createCardElement(card) {
@@ -497,11 +378,8 @@ function createCardElement(card) {
 }
 
 function checkWin() {
-    if (state.playerHand.length === 0) {
-        showResult('<span style="color: #4caf50">Vyhrála jsi! 🟢😊🎉</span>');
-    } else if (state.opponentHand.length === 0) {
-        showResult('<span style="color: #f44336">Počítač vyhrál. 🔴☹️</span>');
-    }
+    if (state.playerHand.length === 0) showResult('<span style="color: #4caf50">Vyhrála jsi! 🟢😊🎉</span>');
+    else if (state.opponentHand.length === 0) showResult('<span style="color: #f44336">Počítač vyhrál. 🔴☹️</span>');
 }
 
 function showResult(message) {
@@ -510,5 +388,4 @@ function showResult(message) {
     elements.overlay.classList.remove('hidden');
 }
 
-// Start the app
 init();

@@ -27,42 +27,56 @@ body {
 
 /* ... existing styles ... */
 
-@media (max-height: 600px), (max-width: 800px) {
+@media (max-height: 700px), (max-width: 900px) {
     :root {
-        --card-width: 80px;
-        --card-height: 126px;
+        --card-width: 90px;
+        --card-height: 142px;
     }
     
+    #game-board {
+        padding: 5px;
+    }
+
+    #opponent-hand .card {
+        transform: scale(0.7);
+        margin-left: -70px;
+    }
+
     #center-area {
-        gap: 20px;
+        gap: 15px;
+        margin: 5px 0;
     }
     
     .big-button {
-        padding: 10px 25px;
-        font-size: 1.1rem;
+        padding: 8px 20px;
+        font-size: 1rem;
     }
 
     #draw-btn {
-        font-size: 1rem;
-        min-width: 80px;
+        font-size: 0.9rem;
+        min-width: 90px;
     }
     
     .card {
-        background-size: 640px 504px; /* Scaled down 8x and 4x */
+        background-size: 720px 568px; /* Scaled 8x and 4x for 90x142 */
+        margin: 0 2px;
     }
     
-    /* Reposition card offsets for smaller size */
-    .card.suit-hearts { background-position-y: -126px; }
-    .card.suit-leaves { background-position-y: -252px; }
-    .card.suit-acorns { background-position-y: -378px; }
+    .suit-hearts { background-position-y: -142px !important; }
+    .suit-leaves { background-position-y: -284px !important; }
+    .suit-acorns { background-position-y: -426px !important; }
 
-    .card.val-8 { background-position-x: -80px; }
-    .card.val-9 { background-position-x: -160px; }
-    .card.val-10 { background-position-x: -240px; }
-    .card.val-spodek { background-position-x: -320px; }
-    .card.val-svrsek { background-position-x: -400px; }
-    .card.val-king { background-position-x: -480px; }
-    .card.val-ace { background-position-x: -560px; }
+    .val-8 { background-position-x: -90px !important; }
+    .val-9 { background-position-x: -180px !important; }
+    .val-10 { background-position-x: -270px !important; }
+    .val-spodek { background-position-x: -360px !important; }
+    .val-svrsek { background-position-x: -450px !important; }
+    .val-king { background-position-x: -540px !important; }
+    .val-ace { background-position-x: -630px !important; }
+
+    .flying-card {
+        background-size: 720px 568px;
+    }
 }
 
 #game-container {
@@ -196,15 +210,32 @@ input:checked + .slider:before {
     transform: rotate(0deg);
 }
 
+#opponent-hand .card {
+    transform: scale(0.8);
+    margin-left: -60px; /* More overlap for opponent to save space */
+    filter: brightness(0.9);
+}
+
+#opponent-hand .card:first-child {
+    margin-left: 0;
+}
+
+#opponent-hand .card:hover {
+    transform: scale(0.85) translateY(5px);
+}
+
 #center-area {
     display: flex;
-    flex-direction: row; /* Side by side for pile and deck */
+    flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 40px;
+    gap: 30px; /* Reduced gap */
     position: relative;
     width: 100%;
+    margin: 10px 0; /* Add some vertical margin */
 }
+
+/* ... existing .pile styles ... */
 
 #draw-pile-container {
     display: flex;
