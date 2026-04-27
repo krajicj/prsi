@@ -248,7 +248,6 @@ function handlePlayCard(cardIndex) {
     const card = state.playerHand[cardIndex];
     const isPlayable = isValidMove(card);
     
-    // Calculate overlap
     const container = elements.playerHand;
     const cardCount = state.playerHand.length;
     const containerWidth = container.offsetWidth || window.innerWidth;
@@ -257,7 +256,7 @@ function handlePlayCard(cardIndex) {
     let cardWidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--card-width'));
     if (isNaN(cardWidth)) cardWidth = window.innerWidth < 900 ? 78 : 108;
     
-    const naturalTotalWidth = cardCount * cardWidth + (cardCount - 1) * 10;
+    const naturalTotalWidth = cardCount * (cardWidth + 10);
     const isOverlapping = naturalTotalWidth > availableWidth;
     
     let overlapPercent = 0;
@@ -269,7 +268,6 @@ function handlePlayCard(cardIndex) {
     const isCrowded = overlapPercent > 0.4;
 
     if (state.selectedCardIndex === cardIndex) {
-        // Second click
         if (isPlayable) {
             const cardEls = elements.playerHand.querySelectorAll('.card');
             const sourceEl = cardEls[cardIndex];
@@ -283,13 +281,10 @@ function handlePlayCard(cardIndex) {
             updateUI();
         }
     } else {
-        // First click
         if (isCrowded) {
-            // Crowded hand: always select first to let user see the card
             state.selectedCardIndex = cardIndex;
             updateUI();
         } else {
-            // Not crowded: play directly if playable, do nothing if not
             if (isPlayable) {
                 const cardEls = elements.playerHand.querySelectorAll('.card');
                 const sourceEl = cardEls[cardIndex];
@@ -299,7 +294,6 @@ function handlePlayCard(cardIndex) {
                     playCard(card);
                 });
             } else {
-                // Not playable and well visible -> just ignore
                 state.selectedCardIndex = null;
                 updateUI();
             }
@@ -412,26 +406,23 @@ function isValidMove(card) {
     return card.suit === state.activeSuit || card.value === topCard.value;
 }
 
-function getSmartMargin(container, cardCount, scale = 1) {
+function getSmartMargin(container, cardCount) {
     if (cardCount <= 1) return 5;
     const containerWidth = container.offsetWidth || window.innerWidth;
-    const availableWidth = containerWidth - 60;
+    const availableWidth = containerWidth - 40;
     let cardWidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--card-width'));
     if (isNaN(cardWidth)) cardWidth = window.innerWidth < 900 ? 78 : 108;
-    const scaledCardWidth = cardWidth * scale;
     
-    // Natural width with 10px gaps
-    const totalNeeded = cardCount * scaledCardWidth + (cardCount - 1) * 10;
+    const naturalTotalWidth = cardCount * (cardWidth + 10);
     
-    if (totalNeeded <= availableWidth) return 5;
+    if (naturalTotalWidth <= availableWidth) return 5;
     
-    // Need overlap
-    const overlapSpace = availableWidth - (cardCount * scaledCardWidth);
-    let margin = (overlapSpace / (cardCount - 1)) / 2;
+    // Calculate overlapping margin to fit exactly
+    const overlapSpace = availableWidth - (cardCount * cardWidth);
+    const margin = (overlapSpace / (cardCount - 1)) / 2;
     
-    // Hard limit so cards don't disappear
-    const minMargin = -(scaledCardWidth / 2) + 10;
-    return Math.max(margin, minMargin);
+    // Safety limit
+    return Math.max(margin, -(cardWidth / 2) + 10);
 }
 
 function updateUI() {
@@ -444,16 +435,13 @@ function updateUI() {
         const cardEl = createCardElement(card);
         const isSelected = state.selectedCardIndex === index;
         const playable = (state.currentTurn === 'player' && isValidMove(card) && !state.waitingForSuitSelection);
-        
         cardEl.style.margin = `0 ${playerMargin}px`;
         cardEl.style.zIndex = index;
         if (isSelected) cardEl.classList.add('selected');
-        
         if (!state.rules.hideHints) {
             if (playable) cardEl.classList.add('playable');
             else if (state.currentTurn === 'player') cardEl.classList.add('dimmed');
         }
-        
         cardEl.addEventListener('click', (e) => {
             e.stopPropagation();
             handlePlayCard(index);
@@ -463,7 +451,7 @@ function updateUI() {
 
     // 2. Opponent Hand
     elements.opponentHand.innerHTML = '';
-    const opponentMargin = getSmartMargin(elements.opponentHand, state.opponentHand.length, 0.8);
+    const opponentMargin = getSmartMargin(elements.opponentHand, state.opponentHand.length);
     state.opponentHand.forEach((card, index) => {
         const cardEl = document.createElement('div');
         cardEl.className = 'card';

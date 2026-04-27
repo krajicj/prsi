@@ -22,10 +22,8 @@ body {
     overflow: hidden;
     user-select: none;
     -webkit-user-select: none;
-    -webkit-touch-callout: none; /* Disable long-press menu on mobile */
+    -webkit-touch-callout: none;
 }
-
-/* ... existing styles ... */
 
 @media (max-height: 700px), (max-width: 900px) {
     :root {
@@ -37,11 +35,6 @@ body {
         padding: 5px;
     }
 
-    #opponent-hand .card {
-        transform: scale(0.7);
-        margin: 0 -8px; /* Negative margin to compensate for scale(0.7) */
-    }
-
     #center-piles {
         gap: 15px;
     }
@@ -49,10 +42,6 @@ body {
     .big-button {
         padding: 8px 20px;
         font-size: 1rem;
-    }
-
-    .card {
-        margin: 0 2px;
     }
 }
 
@@ -175,52 +164,38 @@ input:checked + .slider:before {
     box-sizing: border-box;
 }
 
+#opponent-area, #player-area {
+    width: 100%;
+    max-width: 100vw;
+    position: relative;
+}
+
+#player-area {
+    padding-bottom: 20px;
+}
+
 .hand {
     display: flex;
     justify-content: center;
-    min-height: var(--card-height);
+    align-items: flex-end;
+    min-height: calc(var(--card-height) + 50px);
     width: 100%;
     perspective: 1000px;
-    padding: 0 10px;
-}
-
-#player-hand .card {
-    flex-shrink: 0;
-    margin: 0 4px;
-    transition: transform 0.2s, margin 0.2s, box-shadow 0.2s;
-}
-
-/* Overlap cards when many */
-#player-hand-wrapper.many-cards #player-hand .card {
-    margin: 0 -25px;
-}
-
-#player-hand-wrapper.many-cards #player-hand .card:hover {
-    margin: 0 10px;
-    z-index: 100;
+    padding: 0 20px;
+    box-sizing: border-box;
+    overflow: visible;
 }
 
 #opponent-hand {
-    transform: rotate(0deg);
-}
-
-#opponent-hand .card {
-    transform: scale(0.8);
-    margin: 0 -6px; /* Negative margin to compensate for the visual gap caused by scale(0.8) */
-    filter: brightness(0.9);
-    cursor: default; /* No pointer cursor since it's not interactive */
-}
-
-#opponent-hand .card:first-child {
-    margin-left: 5px;
+    align-items: flex-start; /* Opponent cards hang from top */
 }
 
 #center-area {
     display: flex;
-    flex-direction: column; /* Stack piles and status vertically */
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 20px; /* Exact 20px margin between piles and status */
+    gap: 20px;
     position: relative;
     width: 100%;
     margin: 10px 0;
@@ -231,11 +206,9 @@ input:checked + .slider:before {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 30px; /* Reduced gap between the two piles */
+    gap: 30px;
     position: relative;
 }
-
-/* ... existing .pile styles ... */
 
 #draw-pile-container {
     display: flex;
@@ -249,19 +222,11 @@ input:checked + .slider:before {
     height: var(--card-height);
     position: relative;
     touch-action: manipulation;
-    transition: transform 0.2s, box-shadow 0.2s; /* Add smooth animation */
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 #draw-pile {
     cursor: pointer;
-}
-
-#draw-btn {
-    margin-top: 5px;
-    padding: 10px 20px;
-    font-size: 1.2rem;
-    min-width: 120px;
-    touch-action: manipulation;
 }
 
 #draw-count {
@@ -277,6 +242,7 @@ input:checked + .slider:before {
     pointer-events: none;
 }
 
+/* Card Styling */
 .card {
     width: var(--card-width);
     height: var(--card-height);
@@ -301,6 +267,11 @@ input:checked + .slider:before {
     z-index: 100;
 }
 
+#opponent-hand .card {
+    filter: brightness(0.9);
+    cursor: default;
+}
+
 /* Selected state for two-step play */
 .card.selected {
     transform: translateY(-40px) scale(1.1) !important;
@@ -320,12 +291,11 @@ input:checked + .slider:before {
 }
 
 .card.playable {
-    box-shadow: 0 0 15px var(--primary-color), 0 0 25px var(--primary-color);
+    box-shadow: 0 0 0px var(--primary-color), 0 0 10px var(--primary-color);
 }
 
 .card.dimmed {
-    opacity: 0.5;
-    filter: grayscale(0.8);
+    opacity: 0.9;   
     cursor: not-allowed;
 }
 
@@ -460,35 +430,6 @@ input:checked + .slider:before {
     text-shadow: 0 5px 15px rgba(0,0,0,0.5);
 }
 
-#player-area {
-    width: 100%;
-    max-width: 100vw;
-    position: relative;
-    padding-bottom: 20px;
-}
-
-.hand {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    min-height: calc(var(--card-height) + 50px);
-    width: 100%;
-    perspective: 1000px;
-    padding: 0 20px;
-    box-sizing: border-box;
-    overflow: visible;
-}
-
-#opponent-hand {
-    transform: rotate(0deg);
-}
-
-#opponent-hand .card {
-    transform: scale(0.8);
-    filter: brightness(0.9);
-    cursor: default;
-}
-
 /* Animations */
 .flying-card {
     position: fixed;
@@ -503,5 +444,3 @@ input:checked + .slider:before {
     box-sizing: border-box;
     box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
 }
-
-
