@@ -37,15 +37,16 @@ let state = {
         sevenDraws: false,
         stacking: false,
         jackChanges: false,
-        showOpponentCards: true,
-        showHints: true
+        hideOpponentCards: false,
+        hideHints: false
     },
     effectStack: {
         drawCount: 0,
         skips: 0
     },
     waitingForSuitSelection: false,
-    selectedCardIndex: null
+    selectedCardIndex: null,
+    gameInProgress: false
 };
 
 // --- DOM Elements ---
@@ -63,12 +64,46 @@ const elements = {
     resultMessage: document.getElementById('result-message'),
     activeSuitIndicator: document.getElementById('current-suit-indicator'),
     activeSuitIcon: document.getElementById('active-suit-icon'),
-    advancedSettings: document.getElementById('advanced-settings')
+    advancedSettings: document.getElementById('advanced-settings'),
+    closeSettingsBtn: document.getElementById('close-settings-btn'),
+    ruleHint: document.getElementById('rule-hint'),
+    startGameBtn: document.getElementById('start-game-btn')
 };
 
 function applyDarkMode() {
     const isDark = document.getElementById('dark-mode-toggle').checked;
     document.body.classList.toggle('dark-mode', isDark);
+}
+
+function checkRuleChanges() {
+    if (!state.gameInProgress) {
+        elements.ruleHint.classList.add('hidden');
+        return;
+    }
+
+    const current = {
+        childMode: document.getElementById('child-mode-toggle').checked,
+        aceSkips: document.getElementById('ace-skips-toggle').checked,
+        sevenDraws: document.getElementById('seven-draws-toggle').checked,
+        stacking: document.getElementById('stacking-toggle').checked,
+        jackChanges: document.getElementById('jack-changes-toggle').checked,
+        hideOpponentCards: document.getElementById('hide-opponent-cards-toggle').checked,
+        hideHints: document.getElementById('hide-hints-toggle').checked
+    };
+
+    let changed = false;
+    for (const key in current) {
+        if (current[key] !== state.rules[key]) {
+            changed = true;
+            break;
+        }
+    }
+
+    if (changed) {
+        elements.ruleHint.classList.remove('hidden');
+    } else {
+        elements.ruleHint.classList.add('hidden');
+    }
 }
 
 function saveSettings() {
@@ -84,6 +119,7 @@ function saveSettings() {
     };
     localStorage.setItem('prsi-settings', JSON.stringify(settings));
     applyDarkMode();
+    checkRuleChanges();
 }
 
 function loadSettings() {
@@ -140,9 +176,26 @@ function init() {
     document.getElementById('start-game-btn').addEventListener('click', startGame);
     document.getElementById('restart-btn').addEventListener('click', startGame);
     document.getElementById('draw-pile').addEventListener('click', () => handleDraw('player'));
+    
     document.getElementById('menu-btn').addEventListener('click', () => {
         elements.gameBoard.classList.add('hidden');
         elements.settingsPanel.classList.remove('hidden');
+        
+        if (state.gameInProgress) {
+            elements.closeSettingsBtn.classList.remove('hidden');
+            elements.startGameBtn.textContent = 'Nová hra';
+            checkRuleChanges();
+        } else {
+            elements.closeSettingsBtn.classList.add('hidden');
+            elements.ruleHint.classList.add('hidden');
+            elements.startGameBtn.textContent = 'Hrát hru!';
+        }
+    });
+
+    elements.closeSettingsBtn.addEventListener('click', () => {
+        elements.settingsPanel.classList.add('hidden');
+        elements.gameBoard.classList.remove('hidden');
+        updateUI();
     });
 
     document.querySelectorAll('.color-btn').forEach(btn => {
@@ -160,6 +213,7 @@ function init() {
 }
 
 function startGame() {
+    state.gameInProgress = true;
     state.rules.childMode = document.getElementById('child-mode-toggle').checked;
     state.rules.aceSkips = document.getElementById('ace-skips-toggle').checked;
     state.rules.sevenDraws = document.getElementById('seven-draws-toggle').checked;
@@ -521,6 +575,7 @@ function checkWin() {
 
 function showResult(message) {
     state.isGameOver = true;
+    state.gameInProgress = false;
     elements.resultMessage.innerHTML = message;
     elements.overlay.classList.remove('hidden');
 }

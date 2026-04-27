@@ -11,6 +11,7 @@
     <div id="game-container">
         <!-- Settings Panel -->
         <div id="settings-panel" class="panel">
+            <button id="close-settings-btn" class="close-btn hidden">✕</button>
             <img src="assets/zaludy.webp" alt="" class="corner-icon top-left">
             <img src="assets/srdce.webp" alt="" class="corner-icon top-right">
             
@@ -87,7 +88,10 @@
                 </div>
             </div>
 
-            <button id="start-game-btn" class="big-button">Hrát hru!</button>
+            <div class="settings-actions">
+                <button id="start-game-btn" class="big-button">Hrát hru!</button>
+                <p id="rule-hint" class="rule-hint hidden">Změna pravidel vyžaduje novou hru</p>
+            </div>
         </div>
 
         <!-- Game Board -->
