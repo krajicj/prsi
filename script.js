@@ -4,21 +4,21 @@
 
 // --- Constants & Configuration ---
 const SUITS = [
-    { id: 'bells', symbol: '🔔', label: 'Kule' },
-    { id: 'hearts', symbol: '♥️', label: 'Srdce' },
-    { id: 'leaves', symbol: '🍃', label: 'Listy' },
-    { id: 'acorns', symbol: '🌰', label: 'Žaludy' }
+    { id: 'bells', symbol: '🔔', label: 'Kule', file: 'kulova' },
+    { id: 'hearts', symbol: '♥️', label: 'Srdce', file: 'cervena' },
+    { id: 'leaves', symbol: '🍃', label: 'Listy', file: 'zelena' },
+    { id: 'acorns', symbol: '🌰', label: 'Žaludy', file: 'zaludska' }
 ];
 
 const VALUES = [
-    { id: '7', label: '7' },
-    { id: '8', label: '8' },
-    { id: '9', label: '9' },
-    { id: '10', label: '10' },
-    { id: 'spodek', label: 'Spodek' },
-    { id: 'svrsek', label: 'Svršek' },
-    { id: 'king', label: 'Král' },
-    { id: 'ace', label: 'Eso' }
+    { id: '7', label: '7', file: 'sedmicka' },
+    { id: '8', label: '8', file: 'osmicka' },
+    { id: '9', label: '9', file: 'devitka' },
+    { id: '10', label: '10', file: 'desitka' },
+    { id: 'spodek', label: 'Spodek', file: 'spodek' },
+    { id: 'svrsek', label: 'Svršek', file: 'svrsek' },
+    { id: 'king', label: 'Král', file: 'kral' },
+    { id: 'ace', label: 'Eso', file: 'eso' }
 ];
 
 // --- Game State ---
@@ -37,7 +37,8 @@ let state = {
         sevenDraws: false,
         stacking: false,
         jackChanges: false,
-        showOpponentCards: true
+        showOpponentCards: true,
+        showHints: true
     },
     effectStack: {
         drawCount: 0,
@@ -69,6 +70,7 @@ const elements = {
 function init() {
     document.getElementById('child-mode-toggle').checked = true;
     document.getElementById('show-opponent-cards-toggle').checked = true;
+    document.getElementById('show-hints-toggle').checked = true;
 
     document.getElementById('child-mode-toggle').addEventListener('change', (e) => {
         state.rules.childMode = e.target.checked;
@@ -78,6 +80,7 @@ function init() {
             document.getElementById('stacking-toggle').checked = false;
             document.getElementById('jack-changes-toggle').checked = false;
             document.getElementById('show-opponent-cards-toggle').checked = true;
+            document.getElementById('show-hints-toggle').checked = true;
         }
     });
 
@@ -102,6 +105,7 @@ function startGame() {
     state.rules.stacking = document.getElementById('stacking-toggle').checked;
     state.rules.jackChanges = document.getElementById('jack-changes-toggle').checked;
     state.rules.showOpponentCards = document.getElementById('show-opponent-cards-toggle').checked;
+    state.rules.showHints = document.getElementById('show-hints-toggle').checked;
 
     state.deck = createDeck();
     shuffle(state.deck);
@@ -136,7 +140,13 @@ function createDeck() {
     const deck = [];
     SUITS.forEach(suit => {
         VALUES.forEach(value => {
-            deck.push({ suit: suit.id, value: value.id, symbol: suit.symbol, label: value.label });
+            deck.push({ 
+                suit: suit.id, 
+                value: value.id, 
+                symbol: suit.symbol, 
+                label: value.label,
+                image: `assets/cards/${value.file}-${suit.file}.png`
+            });
         });
     });
     return deck;
@@ -155,6 +165,7 @@ function animateCardMovement(sourceEl, targetEl, card, onComplete) {
 
     const flyer = document.createElement('div');
     flyer.className = `flying-card suit-${card.suit} val-${card.value}`;
+    flyer.style.backgroundImage = `url('${card.image}')`;
     flyer.innerHTML = ''; 
     
     flyer.style.width = sourceRect.width + 'px';
@@ -325,8 +336,13 @@ function updateUI() {
     elements.playerHand.innerHTML = '';
     state.playerHand.forEach((card, index) => {
         const cardEl = createCardElement(card);
-        if (state.currentTurn === 'player' && isValidMove(card) && !state.waitingForSuitSelection) cardEl.classList.add('playable');
-        else if (state.currentTurn === 'player') cardEl.classList.add('dimmed');
+        const playable = (state.currentTurn === 'player' && isValidMove(card) && !state.waitingForSuitSelection);
+        
+        if (state.rules.showHints) {
+            if (playable) cardEl.classList.add('playable');
+            else if (state.currentTurn === 'player') cardEl.classList.add('dimmed');
+        }
+        
         cardEl.addEventListener('click', () => handlePlayCard(index));
         elements.playerHand.appendChild(cardEl);
     });
@@ -334,8 +350,10 @@ function updateUI() {
     elements.opponentHand.innerHTML = '';
     state.opponentHand.forEach((card) => {
         const cardEl = document.createElement('div');
-        if (state.rules.showOpponentCards) cardEl.className = `card suit-${card.suit} val-${card.value}`;
-        else {
+        if (state.rules.showOpponentCards) {
+            cardEl.className = `card suit-${card.suit} val-${card.value}`;
+            cardEl.style.backgroundImage = `url('${card.image}')`;
+        } else {
             cardEl.className = 'card';
             cardEl.innerHTML = '<div class="card-back"></div>';
         }
@@ -349,9 +367,14 @@ function updateUI() {
 
     elements.drawCount.innerText = state.drawPile.length;
     const canDraw = (state.currentTurn === 'player' && !state.waitingForSuitSelection);
-    if (state.rules.childMode && canDraw) elements.drawBtn.classList.add('playable');
-    else if (canDraw && !state.playerHand.some(c => isValidMove(c))) elements.drawBtn.classList.add('playable');
-    else elements.drawBtn.classList.remove('playable');
+    
+    if (state.rules.showHints) {
+        if (state.rules.childMode && canDraw) elements.drawBtn.classList.add('playable');
+        else if (canDraw && !state.playerHand.some(c => isValidMove(c))) elements.drawBtn.classList.add('playable');
+        else elements.drawBtn.classList.remove('playable');
+    } else {
+        elements.drawBtn.classList.remove('playable');
+    }
 
     if (state.waitingForSuitSelection) elements.turnMessage.innerText = 'Vyber si novou barvu!';
     else if (state.currentTurn === 'player') {
@@ -374,6 +397,7 @@ function updateUI() {
 function createCardElement(card) {
     const cardEl = document.createElement('div');
     cardEl.className = `card suit-${card.suit} val-${card.value}`;
+    cardEl.style.backgroundImage = `url('${card.image}')`;
     return cardEl;
 }
 
