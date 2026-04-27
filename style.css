@@ -236,7 +236,7 @@ body {
     gap: 10px;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 600px) {
     .advanced-grid {
         grid-template-columns: 1fr;
     }
@@ -316,14 +316,32 @@ body {
     }
 }
 
-.big-button:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 12px 25px rgba(76, 175, 80, 0.4);
-}
-
-.big-button:active {
-    transform: translateY(0) scale(0.98);
+@media (hover: hover) {
+    .big-button:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 12px 25px rgba(76, 175, 80, 0.4);
+    }
+    #draw-pile:hover {
+        transform: scale(1.05);
+    }
+    #player-hand .card:hover {
+        z-index: 100;
+        transform: translateY(-15px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+    .color-btn:hover { 
+        transform: scale(1.1); 
+        border-color: var(--primary-color);
+    }
+    #menu-btn:hover {
+        opacity: 1;
+        transform: rotate(45deg);
+    }
+    .close-btn:hover {
+        color: var(--text-color);
+        transform: scale(1.1);
+    }
 }
 
 /* Switches */
@@ -451,10 +469,6 @@ input:checked + .slider:before {
     cursor: pointer;
 }
 
-#draw-pile:hover {
-    transform: scale(1.05);
-}
-
 #draw-count {
     position: absolute;
     top: 50%;
@@ -489,10 +503,8 @@ input:checked + .slider:before {
     overflow: hidden;
 }
 
-#player-hand .card:hover {
-    z-index: 100;
-    transform: translateY(-15px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+#player-hand .card {
+    /* base styles handled by .card */
 }
 
 #opponent-hand .card {
@@ -581,11 +593,6 @@ input:checked + .slider:before {
     background-color: white;
 }
 
-.color-btn:hover { 
-    transform: scale(1.1); 
-    border-color: var(--primary-color);
-}
-
 .color-btn.hearts { background-image: url('assets/srdce.webp'); }
 .color-btn.leaves { background-image: url('assets/zelene.webp'); }
 .color-btn.bells { background-image: url('assets/kule.webp'); }
@@ -653,11 +660,6 @@ input:checked + .slider:before {
     opacity: 0.9;
     transition: opacity 0.2s, transform 0.2s;
     color: var(--text-color);
-}
-
-#menu-btn:hover {
-    opacity: 1;
-    transform: rotate(45deg);
 }
 
 /* Result Overlay */
