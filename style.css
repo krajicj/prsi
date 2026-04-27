@@ -300,15 +300,19 @@ input:checked + .slider:before {
 .card-back {
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #1e88e5 25%, #1565c0 25%, #1565c0 50%, #1e88e5 50%, #1e88e5 75%, #1565c0 75%, #1565c0 100%);
-    background-size: 20px 20px;
+    background-image: url('assets/back.png');
+    background-size: 110%; /* Zoom in more to hide edges */
+    background-repeat: no-repeat;
+    background-position: center;
     border-radius: calc(var(--card-radius) - 1px);
     border: 1px solid #000;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+    box-sizing: border-box;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
     position: absolute;
     top: 0;
     left: 0;
     z-index: 2;
+    transform: scale(1.05); /* Aggressive scale to hide everything */
 }
 
 /* Suit picker */
