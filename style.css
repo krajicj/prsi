@@ -42,9 +42,8 @@ body {
         margin: 0 -8px; /* Negative margin to compensate for scale(0.7) */
     }
 
-    #center-area {
+    #center-piles {
         gap: 15px;
-        margin: 5px 0;
     }
     
     .big-button {
@@ -201,13 +200,22 @@ input:checked + .slider:before {
 
 #center-area {
     display: flex;
+    flex-direction: column; /* Stack piles and status vertically */
+    align-items: center;
+    justify-content: center;
+    gap: 20px; /* Exact 20px margin between piles and status */
+    position: relative;
+    width: 100%;
+    margin: 10px 0;
+}
+
+#center-piles {
+    display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 30px; /* Reduced gap */
+    gap: 30px; /* Reduced gap between the two piles */
     position: relative;
-    width: 100%;
-    margin: 10px 0; /* Add some vertical margin */
 }
 
 /* ... existing .pile styles ... */
@@ -365,7 +373,7 @@ input:checked + .slider:before {
     background: rgba(255,255,255,0.7);
     padding: 10px 20px;
     border-radius: 15px;
-    margin-top: 15px; /* Added margin so it sits nicely below the piles */
+    box-sizing: border-box;
 }
 
 #draw-pile.playable {

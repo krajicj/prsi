@@ -73,32 +73,34 @@
             </div>
 
             <div id="center-area">
-                <div id="draw-pile-container">
-                    <div id="draw-pile" class="pile">
-                        <div class="card-back"></div>
-                        <div id="draw-count">32</div>
+                <div id="center-piles">
+                    <div id="draw-pile-container">
+                        <div id="draw-pile" class="pile">
+                            <div class="card-back"></div>
+                            <div id="draw-count">32</div>
+                        </div>
+                    </div>
+                    <div id="discard-pile" class="pile">
+                        <!-- Top card goes here -->
+                    </div>
+                    
+                    <div id="suit-picker" class="hidden">
+                        <div class="picker-title">Vyber barvu:</div>
+                        <div class="color-options">
+                            <button class="color-btn hearts" data-suit="hearts"></button>
+                            <button class="color-btn leaves" data-suit="leaves"></button>
+                            <button class="color-btn bells" data-suit="bells"></button>
+                            <button class="color-btn acorns" data-suit="acorns"></button>
+                        </div>
                     </div>
                 </div>
-                <div id="discard-pile" class="pile">
-                    <!-- Top card goes here -->
-                </div>
-                
-                <div id="suit-picker" class="hidden">
-                    <div class="picker-title">Vyber barvu:</div>
-                    <div class="color-options">
-                        <button class="color-btn hearts" data-suit="hearts"></button>
-                        <button class="color-btn leaves" data-suit="leaves"></button>
-                        <button class="color-btn bells" data-suit="bells"></button>
-                        <button class="color-btn acorns" data-suit="acorns"></button>
-                    </div>
-                </div>
-            </div>
 
-            <div id="game-status">
-                <div id="current-suit-indicator" class="hidden">
-                    Hraje se: <span id="active-suit-icon"></span>
+                <div id="game-status">
+                    <div id="current-suit-indicator" class="hidden">
+                        Hraje se: <span id="active-suit-icon"></span>
+                    </div>
+                    <div id="turn-message">Na řadě jsi ty!</div>
                 </div>
-                <div id="turn-message">Na řadě jsi ty!</div>
             </div>
 
             <div id="player-area">
