@@ -5,7 +5,7 @@
     --danger-color: #f44336;
     --card-width: 108px;
     --card-height: 187px;
-    --card-radius: 8px;
+    --card-radius: 12px;
     
     /* Card Suits */
     --hearts-color: #e91e63;
@@ -17,7 +17,7 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background-color: var(--bg-color);
     overflow: hidden;
     user-select: none;
@@ -40,8 +40,26 @@ body {
     }
     
     .big-button {
-        padding: 8px 20px;
-        font-size: 1rem;
+        padding: 12px 30px;
+        font-size: 1.2rem;
+    }
+
+    .panel {
+        padding: 1rem !important;
+        width: calc(100% - 40px) !important;
+        box-sizing: border-box;
+    }
+
+    .welcome-header h1 {
+        font-size: 1.8rem !important;
+    }
+
+    .setting-card {
+        padding: 8px 12px !important;
+    }
+
+    .setting-label {
+        font-size: 0.9rem !important;
     }
 }
 
@@ -53,6 +71,7 @@ body {
     align-items: center;
     justify-content: center;
     position: relative;
+    background: radial-gradient(circle, #f0f8ff 0%, #e0f0ff 100%);
 }
 
 .hidden {
@@ -62,50 +81,138 @@ body {
 /* Panels */
 .panel {
     background: white;
-    padding: 2rem;
-    border-radius: 24px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 2.5rem;
+    border-radius: 32px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
     text-align: center;
-    max-width: 400px;
+    max-width: 450px;
     width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative; /* For absolute corner icons */
 }
 
-.setting-item {
+.corner-icon {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+}
+
+.corner-icon.top-left {
+    top: 15px;
+    left: 15px;
+}
+
+.corner-icon.top-right {
+    top: 15px;
+    right: 15px;
+}
+
+.welcome-header {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.welcome-header h1 {
+    font-size: 2.5rem;
+    margin: 0;
+    color: #333;
+    font-weight: 800;
+}
+
+.welcome-header p {
+    color: #666;
+    margin: 5px 0 0 0;
+    font-size: 1.2rem;
+}
+
+.settings-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    text-align: left;
+}
+
+.setting-card {
+    background: #f8f9fa;
+    border: 2px solid #eee;
+    padding: 12px 16px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 15px 0;
-    font-size: 1.1rem;
+    transition: all 0.2s;
+}
+
+.setting-card.main-mode {
+    background: #e8f5e9;
+    border-color: #c8e6c9;
+    padding: 16px;
+}
+
+.setting-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.setting-label {
+    font-weight: 700;
+    color: #333;
+    font-size: 1rem;
+}
+
+.setting-desc {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.advanced-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+@media (max-width: 400px) {
+    .advanced-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .big-button {
     background-color: var(--primary-color);
     color: white;
     border: none;
-    padding: 15px 40px;
-    font-size: 1.5rem;
+    padding: 18px 45px;
+    font-size: 1.6rem;
     border-radius: 50px;
     cursor: pointer;
-    margin-top: 20px;
-    transition: transform 0.2s, background-color 0.2s;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+    font-weight: 700;
 }
 
 .big-button:hover {
     background-color: var(--primary-hover);
-    transform: scale(1.05);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 25px rgba(76, 175, 80, 0.4);
 }
 
 .big-button:active {
-    transform: scale(0.95);
+    transform: translateY(0) scale(0.98);
 }
 
 /* Switches */
 .switch {
     position: relative;
     display: inline-block;
-    width: 60px;
-    height: 34px;
+    width: 54px;
+    height: 30px;
+    flex-shrink: 0;
 }
 
 .switch input {
@@ -123,17 +230,20 @@ body {
     bottom: 0;
     background-color: #ccc;
     transition: .4s;
+    border-radius: 30px;
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 26px;
-    width: 26px;
+    height: 22px;
+    width: 22px;
     left: 4px;
     bottom: 4px;
     background-color: white;
     transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 input:checked + .slider {
@@ -141,15 +251,7 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-    transform: translateX(26px);
-}
-
-.slider.round {
-    border-radius: 34px;
-}
-
-.slider.round:before {
-    border-radius: 50%;
+    transform: translateX(24px);
 }
 
 /* Game Board Layout */
@@ -187,7 +289,7 @@ input:checked + .slider:before {
 }
 
 #opponent-hand {
-    align-items: flex-start; /* Opponent cards hang from top */
+    align-items: flex-start;
 }
 
 #center-area {
@@ -291,11 +393,12 @@ input:checked + .slider:before {
 }
 
 .card.playable {
-    box-shadow: 0 0 0px var(--primary-color), 0 0 10px var(--primary-color);
+    box-shadow: 0 0 15px var(--primary-color), 0 0 25px var(--primary-color);
 }
 
 .card.dimmed {
-    opacity: 0.9;   
+    opacity: 0.5;
+    filter: grayscale(0.8);
     cursor: not-allowed;
 }
 
