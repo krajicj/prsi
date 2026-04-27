@@ -39,7 +39,7 @@ body {
 
     #opponent-hand .card {
         transform: scale(0.7);
-        margin-left: -60px;
+        margin: 0 -8px; /* Negative margin to compensate for scale(0.7) */
     }
 
     #center-area {
@@ -195,16 +195,13 @@ input:checked + .slider:before {
 
 #opponent-hand .card {
     transform: scale(0.8);
-    margin-left: -60px; /* More overlap for opponent to save space */
+    margin: 0 -6px; /* Negative margin to compensate for the visual gap caused by scale(0.8) */
     filter: brightness(0.9);
+    cursor: default; /* No pointer cursor since it's not interactive */
 }
 
 #opponent-hand .card:first-child {
-    margin-left: 0;
-}
-
-#opponent-hand .card:hover {
-    transform: scale(0.85) translateY(5px);
+    margin-left: 5px;
 }
 
 #center-area {
@@ -232,6 +229,7 @@ input:checked + .slider:before {
     height: var(--card-height);
     position: relative;
     touch-action: manipulation;
+    transition: transform 0.2s, box-shadow 0.2s; /* Add smooth animation */
 }
 
 #draw-pile {
@@ -281,9 +279,14 @@ input:checked + .slider:before {
     margin-left: 5px;
 }
 
-.card:hover {
+#player-hand .card:hover, #draw-pile:hover {
     transform: translateY(-20px);
     z-index: 100;
+}
+
+#discard-pile .card {
+    cursor: default;
+    pointer-events: none; /* Make discard pile completely inert */
 }
 
 .card.playable {
@@ -437,5 +440,17 @@ input:checked + .slider:before {
 }
 
 ize adjustment for flying-card here as we use contain */
+}
+
+
+
+@media (max-height: 600px), (max-width: 800px) {
+    /* No longer need background-size adjustment for flying-card here as we use contain */
+}
+
+ize adjustment for flying-card here as we use contain */
+}
+
+e contain */
 }
 
