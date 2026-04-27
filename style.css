@@ -621,6 +621,7 @@ input:checked + .slider:before {
     border: 2px solid var(--primary-color);
     box-shadow: 0 0 15px var(--primary-color);
     animation: pulse 1.5s infinite;
+    border-radius: var(--card-radius);
 }
 
 @keyframes pulse {

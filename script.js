@@ -538,10 +538,14 @@ function updateUI() {
     elements.drawCount.innerText = state.drawPile.length;
     const canDraw = (state.currentTurn === 'player' && !state.waitingForSuitSelection);
     if (!state.rules.hideHints) {
-        if (state.rules.childMode && canDraw) elements.drawPile.classList.add('playable');
-        else if (canDraw && !state.playerHand.some(c => isValidMove(c))) elements.drawPile.classList.add('playable');
-        else elements.drawPile.classList.remove('playable');
-    } else elements.drawPile.classList.remove('playable');
+        if (canDraw && !state.playerHand.some(c => isValidMove(c))) {
+            elements.drawPile.classList.add('playable');
+        } else {
+            elements.drawPile.classList.remove('playable');
+        }
+    } else {
+        elements.drawPile.classList.remove('playable');
+    }
 
     if (state.waitingForSuitSelection) elements.turnMessage.innerText = 'Vyber si novou barvu!';
     else if (state.currentTurn === 'player') {
