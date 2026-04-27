@@ -146,7 +146,7 @@ function loadSettings() {
 
 // --- Initialization ---
 async function preloadAssets() {
-    const imagesToLoad = [
+    const criticalAssets = [
         'assets/back.webp',
         'assets/kule.webp',
         'assets/srdce.webp',
@@ -154,10 +154,10 @@ async function preloadAssets() {
         'assets/zaludy.webp'
     ];
 
-    // Add all card images
+    const cardAssets = [];
     SUITS.forEach(suit => {
         VALUES.forEach(value => {
-            imagesToLoad.push(`assets/cards/${value.file}-${suit.file}.webp`);
+            cardAssets.push(`assets/cards/${value.file}-${suit.file}.webp`);
         });
     });
 
@@ -166,23 +166,30 @@ async function preloadAssets() {
     btn.disabled = true;
     btn.textContent = 'Načítám...';
     btn.style.opacity = '0.7';
-    btn.style.cursor = 'wait';
 
-    const promises = imagesToLoad.map(src => {
-        return new Promise((resolve, reject) => {
+    // 1. Load critical assets first
+    const criticalPromises = criticalAssets.map(src => {
+        return new Promise(resolve => {
             const img = new Image();
             img.src = src;
             img.onload = resolve;
-            img.onerror = resolve; // Continue even if some images fail
+            img.onerror = resolve;
         });
     });
 
-    await Promise.all(promises);
+    await Promise.all(criticalPromises);
 
+    // 2. Enable game immediately
     btn.disabled = false;
     btn.textContent = originalText;
     btn.style.opacity = '1';
     btn.style.cursor = 'pointer';
+
+    // 3. Load the rest of the cards in the background
+    cardAssets.forEach(src => {
+        const img = new Image();
+        img.src = src;
+    });
 }
 
 function init() {
