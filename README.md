@@ -1,37 +1,44 @@
 # Prší - Karetní hra pro děti
 
-Jednoduchá a barevná webová verze klasické karetní hry **Prší**, navržená speciálně pro malé děti (3+ roky), ale plně hratelná i pro dospělé.
+Jednoduchá a hravá webová verze klasické karetní hry **Prší**, navržená s důrazem na vizuální kvalitu a intuitivní ovládání pro děti, ale s bohatým nastavením pro dospělé.
+
+## Hlavní přednosti
+- **Lossless WebP grafika:** Maximálně ostré karty pro moderní displeje.
+- **Smart Card Stacking:** Inteligentní vějíř karet, který se dynamicky přizpůsobuje šířce obrazovky bez nutnosti scrollování.
+- **Dětský UX design:** Jasné vizuální nápovědy a hravé animace.
+- **Plná responzivita:** Navrženo pro mobily, tablety i desktop s ohledem na dotykové ovládání.
+
+## Herní režimy a nastavení
+
+### 1. Dětský režim (Child Mode)
+Tento režim je navržen pro nejmenší hráče:
+- **Vizuální nápověda:** Hratelné karty jsou zvýrazněny, nehratelné jsou potlačeny.
+- **Zjednodušená pravidla:** Odstraňuje složité mechaniky (sedmy, esa), aby se dítě mohlo soustředit na barvy a tvary.
+
+### 2. Rozšířená pravidla
+V nastavení (ikona ⚙️) si můžete zapnout klasické mechaniky:
+- **Eso staví:** Soupeř jedno kolo nehraje.
+- **Sedma bere dvě:** Soupeř si musí líznout 2 karty (s možností přebíjení).
+- **Přebíjení:** Skládání sedem a es na sebe.
+- **Svršek mění barvu:** Výběr barvy pomocí přehledného pickeru.
+
+### 3. Vizuální nastavení
+- **Temný režim:** Elegantní tmavé téma šetrné k očím s inteligentní úpravou barev symbolů.
+- **Skrýt karty PC:** Pro větší přehlednost na malých displejích.
+- **Skrýt nápovědy:** Odstranění herních textů pro zkušené hráče.
+
+## Inteligentní ovládání (UX)
+Hra obsahuje unikátní systém pro malé displeje:
+- **Standardní režim:** Hraní karty jedním kliknutím/dotykem.
+- **Crowded režim:** Pokud se karty v ruce překrývají o více než 40 %, aktivuje se dvoufázové ovládání. První dotyk kartu vysune k náhledu, druhý ji zahraje. To zabraňuje překlikům na telefonech.
 
 ## Jak hru spustit
-Stačí otevřít soubor `index.html` v libovolném moderním webovém prohlížeči. Hra nevyžaduje žádnou instalaci ani internetové připojení.
-
-## Herní režimy
-
-### 1. Dětský režim (Child Mode) - Výchozí
-Tento režim je navržen tak, aby byl co nejjednodušší:
-- **Žádná speciální pravidla**: Žádné braní dvou karet za sedmu, žádné stání za eso.
-- **Vizuální nápověda**: Všechny karty, které můžeš zahrát, jsou **zeleně zvýrazněny**.
-- **Tlačítko Líznout**: Pokud nemáš co hrát (nebo nechceš), tlačítko "Líznout" je také zelené.
-- **Jednoduchost**: Stačí sledovat barvu nebo číslo/symbol.
-
-### 2. Standardní režim
-Po vypnutí dětského režimu v nastavení (ozubené kolečko nebo úvodní obrazovka) si můžete zapnout klasická pravidla Prší:
-- **Eso staví**: Soupeř jedno kolo nehraje.
-- **Sedma bere dvě**: Soupeř si musí líznout 2 karty (a nehraje).
-- **Přebíjení**: Pokud soupeř zahraje sedmu, můžeš na ni hodit svou sedmu a on pak musí brát 4 (atd.). Totéž platí pro esa.
-- **Svršek mění barvu**: Pokud zahraješ Svrška (S), můžeš si vybrat jakoukoli barvu, která se bude hrát dál.
-
-## Pravidla hry
-- Každý hráč dostane na začátku 4 karty.
-- Hráči se střídají v odhazování karet na hromádku.
-- Kartu můžeš zahrát, pokud má **stejnou barvu** nebo **stejnou hodnotu** jako karta na stole.
-- Pokud nemůžeš nebo nechceš hrát, musíš si **líznout** kartu z balíčku. Po líznutí tvůj tah končí.
-- Vítězem se stává ten, kdo se jako první zbaví všech karet v ruce.
+Stačí otevřít soubor `index.html` v libovolném moderním prohlížeči. Hra běží offline a nevyžaduje žádnou instalaci.
 
 ## Technické informace
-- Vyrobeno pomocí HTML5, CSS3 a čistého JavaScriptu.
-- Bez externích knihoven a frameworků.
-- Responzivní design vhodný pro počítače i tablety (dotykové ovládání).
+- **Frontend:** HTML5, Vanilla CSS3 (Custom Variables, Flexbox, Grid), Clean JavaScript (ES6+).
+- **Bez závislostí:** Žádné externí knihovny, nulový "overhead".
+- **Assety:** Vlastní WebP grafika bez systémových emoji pro konzistentní vzhled na všech platformách.
 
 ---
-Vytvořeno jako radostná hra pro malé i velké hráče.
+Vytvořeno jako radostná, bezpečná a esteticky vyladěná hra pro celou rodinu.
