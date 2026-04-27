@@ -331,6 +331,10 @@ input:checked + .slider:before {
     cursor: pointer;
 }
 
+#draw-pile:hover {
+    transform: scale(1.05);
+}
+
 #draw-count {
     position: absolute;
     top: 50%;
@@ -353,12 +357,12 @@ input:checked + .slider:before {
     box-sizing: border-box;
     box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
     cursor: pointer;
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-                margin 0.2s, 
-                box-shadow 0.2s, 
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                margin 0.2s,
+                box-shadow 0.2s,
                 filter 0.2s;
     position: relative;
-    background-size: 103%;
+    background-size: 104%;
     background-repeat: no-repeat;
     background-position: center;
     flex-shrink: 0;
@@ -367,6 +371,8 @@ input:checked + .slider:before {
 
 #player-hand .card:hover {
     z-index: 100;
+    transform: translateY(-15px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
 }
 
 #opponent-hand .card {
