@@ -4,10 +4,10 @@
 
 // --- Constants & Configuration ---
 const SUITS = [
-    { id: 'bells', symbol: '🔔', label: 'Kule', file: 'kulova' },
-    { id: 'hearts', symbol: '♥️', label: 'Srdce', file: 'cervena' },
-    { id: 'leaves', symbol: '🍃', label: 'Listy', file: 'zelena' },
-    { id: 'acorns', symbol: '🌰', label: 'Žaludy', file: 'zaludska' }
+    { id: 'bells', symbol: '🔔', label: 'Kule', file: 'kulova', icon: 'assets/kule.webp' },
+    { id: 'hearts', symbol: '♥️', label: 'Srdce', file: 'cervena', icon: 'assets/srdce.webp' },
+    { id: 'leaves', symbol: '🍃', label: 'Listy', file: 'zelena', icon: 'assets/zelene.webp' },
+    { id: 'acorns', symbol: '🌰', label: 'Žaludy', file: 'zaludska', icon: 'assets/zaludy.webp' }
 ];
 
 const VALUES = [
@@ -195,7 +195,7 @@ function createDeck() {
                 value: value.id, 
                 symbol: suit.symbol, 
                 label: value.label,
-                image: `assets/cards/${value.file}-${suit.file}.png`
+                image: `assets/cards/${value.file}-${suit.file}.webp`
             });
         });
     });
@@ -439,7 +439,7 @@ function updateUI() {
     if (topCard && state.activeSuit !== topCard.suit) {
         elements.activeSuitIndicator.classList.remove('hidden');
         const suitData = SUITS.find(s => s.id === state.activeSuit);
-        elements.activeSuitIcon.innerText = suitData.symbol + ' ' + suitData.label;
+        elements.activeSuitIcon.innerHTML = `<img src="${suitData.icon}" class="status-icon"> ${suitData.label}`;
         elements.activeSuitIcon.className = `suit-${state.activeSuit}`;
     } else elements.activeSuitIndicator.classList.add('hidden');
 }
