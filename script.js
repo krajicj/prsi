@@ -145,8 +145,49 @@ function loadSettings() {
 }
 
 // --- Initialization ---
+async function preloadAssets() {
+    const imagesToLoad = [
+        'assets/back.webp',
+        'assets/kule.webp',
+        'assets/srdce.webp',
+        'assets/zelene.webp',
+        'assets/zaludy.webp'
+    ];
+
+    // Add all card images
+    SUITS.forEach(suit => {
+        VALUES.forEach(value => {
+            imagesToLoad.push(`assets/cards/${value.file}-${suit.file}.webp`);
+        });
+    });
+
+    const btn = elements.startGameBtn;
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Načítám...';
+    btn.style.opacity = '0.7';
+    btn.style.cursor = 'wait';
+
+    const promises = imagesToLoad.map(src => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = resolve;
+            img.onerror = resolve; // Continue even if some images fail
+        });
+    });
+
+    await Promise.all(promises);
+
+    btn.disabled = false;
+    btn.textContent = originalText;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+}
+
 function init() {
     loadSettings();
+    preloadAssets();
 
     const childModeToggle = document.getElementById('child-mode-toggle');
     const darkModeToggle = document.getElementById('dark-mode-toggle');
