@@ -54,6 +54,10 @@ body {
         --card-height: 136px;
     }
     
+    #game-container {
+        justify-content: flex-start !important;
+    }
+
     #game-board {
         padding: 5px;
         height: 70% !important;
