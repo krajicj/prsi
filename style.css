@@ -181,6 +181,23 @@ input:checked + .slider:before {
     min-height: var(--card-height);
     width: 100%;
     perspective: 1000px;
+    padding: 0 10px;
+}
+
+#player-hand .card {
+    flex-shrink: 0;
+    margin: 0 4px;
+    transition: transform 0.2s, margin 0.2s, box-shadow 0.2s;
+}
+
+/* Overlap cards when many */
+#player-hand-wrapper.many-cards #player-hand .card {
+    margin: 0 -25px;
+}
+
+#player-hand-wrapper.many-cards #player-hand .card:hover {
+    margin: 0 10px;
+    z-index: 100;
 }
 
 #opponent-hand {
@@ -260,7 +277,6 @@ input:checked + .slider:before {
     pointer-events: none;
 }
 
-/* Card Styling */
 .card {
     width: var(--card-width);
     height: var(--card-height);
@@ -269,37 +285,47 @@ input:checked + .slider:before {
     box-sizing: border-box;
     box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    margin: 0 5px;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                margin 0.2s, 
+                box-shadow 0.2s, 
+                filter 0.2s;
     position: relative;
     background-size: 103%;
     background-repeat: no-repeat;
     background-position: center;
+    flex-shrink: 0;
     overflow: hidden;
 }
 
-.card:first-child {
-    margin-left: 5px;
+#player-hand .card:hover {
+    z-index: 100;
 }
 
-#player-hand .card:hover, #draw-pile:hover {
-    transform: translateY(-20px);
-    z-index: 100;
+/* Selected state for two-step play */
+.card.selected {
+    transform: translateY(-40px) scale(1.1) !important;
+    z-index: 500 !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+/* Dim others when a card is selected */
+.hand.has-selection .card:not(.selected) {
+    filter: brightness(0.7) grayscale(0.2);
+    opacity: 0.8;
 }
 
 #discard-pile .card {
     cursor: default;
-    pointer-events: none; /* Make discard pile completely inert */
+    pointer-events: none;
 }
 
 .card.playable {
     box-shadow: 0 0 15px var(--primary-color), 0 0 25px var(--primary-color);
-    transform: translateY(-10px);
 }
 
 .card.dimmed {
-    opacity: 0.6;
-    filter: grayscale(0.5);
+    opacity: 0.5;
+    filter: grayscale(0.8);
     cursor: not-allowed;
 }
 
@@ -307,7 +333,7 @@ input:checked + .slider:before {
     width: 100%;
     height: 100%;
     background-image: url('assets/back.webp');
-    background-size: 110%; /* Zoom in more to hide edges */
+    background-size: 110%;
     background-repeat: no-repeat;
     background-position: center;
     border-radius: calc(var(--card-radius) - 1px);
@@ -318,7 +344,7 @@ input:checked + .slider:before {
     top: 0;
     left: 0;
     z-index: 2;
-    transform: scale(1.05); /* Aggressive scale to hide everything */
+    transform: scale(1.05);
 }
 
 /* Suit picker */
@@ -434,6 +460,35 @@ input:checked + .slider:before {
     text-shadow: 0 5px 15px rgba(0,0,0,0.5);
 }
 
+#player-area {
+    width: 100%;
+    max-width: 100vw;
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.hand {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    min-height: calc(var(--card-height) + 50px);
+    width: 100%;
+    perspective: 1000px;
+    padding: 0 20px;
+    box-sizing: border-box;
+    overflow: visible;
+}
+
+#opponent-hand {
+    transform: rotate(0deg);
+}
+
+#opponent-hand .card {
+    transform: scale(0.8);
+    filter: brightness(0.9);
+    cursor: default;
+}
+
 /* Animations */
 .flying-card {
     position: fixed;
@@ -449,22 +504,4 @@ input:checked + .slider:before {
     box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
 }
 
-@media (max-height: 600px), (max-width: 800px) {
-    /* No longer need background-size adjustment for flying-card here as we use contain */
-}
-
-ize adjustment for flying-card here as we use contain */
-}
-
-
-
-@media (max-height: 600px), (max-width: 800px) {
-    /* No longer need background-size adjustment for flying-card here as we use contain */
-}
-
-ize adjustment for flying-card here as we use contain */
-}
-
-e contain */
-}
 

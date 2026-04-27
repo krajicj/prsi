@@ -44,7 +44,8 @@ let state = {
         drawCount: 0,
         skips: 0
     },
-    waitingForSuitSelection: false
+    waitingForSuitSelection: false,
+    selectedCardIndex: null
 };
 
 // --- DOM Elements ---
@@ -95,14 +96,7 @@ function loadSettings() {
             console.error('Failed to parse settings');
         }
     }
-    // Defaults if no settings
     document.getElementById('child-mode-toggle').checked = true;
-    document.getElementById('ace-skips-toggle').checked = false;
-    document.getElementById('seven-draws-toggle').checked = false;
-    document.getElementById('stacking-toggle').checked = false;
-    document.getElementById('jack-changes-toggle').checked = false;
-    document.getElementById('hide-opponent-cards-toggle').checked = false;
-    document.getElementById('hide-hints-toggle').checked = false;
 }
 
 // --- Initialization ---
@@ -120,17 +114,13 @@ function init() {
     ];
 
     childModeToggle.addEventListener('change', (e) => {
-        if (e.target.checked) {
-            otherToggles.forEach(t => t.checked = false);
-        }
+        if (e.target.checked) otherToggles.forEach(t => t.checked = false);
         saveSettings();
     });
 
     otherToggles.forEach(toggle => {
-        toggle.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                childModeToggle.checked = false;
-            }
+        toggle.addEventListener('change', () => {
+            if (toggle.checked) childModeToggle.checked = false;
             saveSettings();
         });
     });
@@ -146,6 +136,15 @@ function init() {
     document.querySelectorAll('.color-btn').forEach(btn => {
         btn.addEventListener('click', () => selectSuit(btn.dataset.suit));
     });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.card') && !e.target.closest('#draw-pile')) {
+            state.selectedCardIndex = null;
+            updateUI();
+        }
+    });
+
+    window.addEventListener('resize', updateUI);
 }
 
 function startGame() {
@@ -166,6 +165,7 @@ function startGame() {
     state.currentTurn = 'player';
     state.activeSuit = null;
     state.isGameOver = false;
+    state.selectedCardIndex = null;
     state.effectStack = { drawCount: 0, skips: 0 };
     state.waitingForSuitSelection = false;
 
@@ -216,7 +216,6 @@ function animateCardMovement(sourceEl, targetEl, card, onComplete) {
     const flyer = document.createElement('div');
     flyer.className = `flying-card suit-${card.suit} val-${card.value}`;
     flyer.style.backgroundImage = `url('${card.image}')`;
-    flyer.innerHTML = ''; 
     
     flyer.style.width = sourceRect.width + 'px';
     flyer.style.height = sourceRect.height + 'px';
@@ -236,16 +235,10 @@ function animateCardMovement(sourceEl, targetEl, card, onComplete) {
         flyer.style.transform = `rotate(${Math.random() * 20 - 10}deg) scale(1.1)`;
     }, 20);
 
-    let finished = false;
-    const finish = () => {
-        if (finished) return;
-        finished = true;
+    setTimeout(() => {
         flyer.remove();
         if (onComplete) onComplete();
-    };
-
-    flyer.addEventListener('transitionend', finish, { once: true });
-    setTimeout(finish, 800); 
+    }, 650);
 }
 
 // --- Gameplay ---
@@ -253,18 +246,63 @@ function handlePlayCard(cardIndex) {
     if (state.currentTurn !== 'player' || state.isGameOver || state.waitingForSuitSelection) return;
 
     const card = state.playerHand[cardIndex];
-    if (isValidMove(card)) {
-        const cardEls = elements.playerHand.querySelectorAll('.card');
-        const sourceEl = cardEls[cardIndex];
+    const isPlayable = isValidMove(card);
+    
+    // Calculate overlap
+    const container = elements.playerHand;
+    const cardCount = state.playerHand.length;
+    const containerWidth = container.offsetWidth || window.innerWidth;
+    const availableWidth = containerWidth - 40;
+    
+    let cardWidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--card-width'));
+    if (isNaN(cardWidth)) cardWidth = window.innerWidth < 900 ? 78 : 108;
+    
+    const naturalTotalWidth = cardCount * cardWidth + (cardCount - 1) * 10;
+    const isOverlapping = naturalTotalWidth > availableWidth;
+    
+    let overlapPercent = 0;
+    if (isOverlapping && cardCount > 1) {
+        const overlapSpacePerCard = (naturalTotalWidth - availableWidth) / (cardCount - 1);
+        overlapPercent = overlapSpacePerCard / cardWidth;
+    }
 
-        if (sourceEl) {
+    const isCrowded = overlapPercent > 0.4;
+
+    if (state.selectedCardIndex === cardIndex) {
+        // Second click
+        if (isPlayable) {
+            const cardEls = elements.playerHand.querySelectorAll('.card');
+            const sourceEl = cardEls[cardIndex];
             animateCardMovement(sourceEl, elements.discardPile, card, () => {
                 state.playerHand.splice(cardIndex, 1);
+                state.selectedCardIndex = null;
                 playCard(card);
             });
         } else {
-            state.playerHand.splice(cardIndex, 1);
-            playCard(card);
+            state.selectedCardIndex = null;
+            updateUI();
+        }
+    } else {
+        // First click
+        if (isCrowded) {
+            // Crowded hand: always select first to let user see the card
+            state.selectedCardIndex = cardIndex;
+            updateUI();
+        } else {
+            // Not crowded: play directly if playable, do nothing if not
+            if (isPlayable) {
+                const cardEls = elements.playerHand.querySelectorAll('.card');
+                const sourceEl = cardEls[cardIndex];
+                animateCardMovement(sourceEl, elements.discardPile, card, () => {
+                    state.playerHand.splice(cardIndex, 1);
+                    state.selectedCardIndex = null;
+                    playCard(card);
+                });
+            } else {
+                // Not playable and well visible -> just ignore
+                state.selectedCardIndex = null;
+                updateUI();
+            }
         }
     }
 }
@@ -289,7 +327,6 @@ function playCard(card) {
             }
         }
     }
-
     checkWin();
     if (!state.isGameOver) endTurn();
 }
@@ -307,16 +344,10 @@ function opponentTurn() {
         const card = state.opponentHand[index];
         const cardEls = elements.opponentHand.querySelectorAll('.card');
         const sourceEl = cardEls[index];
-
-        if (sourceEl) {
-            animateCardMovement(sourceEl, elements.discardPile, card, () => {
-                state.opponentHand.splice(index, 1);
-                playCard(card);
-            });
-        } else {
+        animateCardMovement(sourceEl, elements.discardPile, card, () => {
             state.opponentHand.splice(index, 1);
             playCard(card);
-        }
+        });
     } else {
         handleDraw('opponent');
     }
@@ -324,7 +355,6 @@ function opponentTurn() {
 
 function handleDraw(who) {
     if (state.currentTurn !== who || state.isGameOver || state.waitingForSuitSelection) return;
-
     if (state.effectStack.drawCount > 0) {
         for (let i = 0; i < state.effectStack.drawCount; i++) drawOne(who);
         state.effectStack.drawCount = 0;
@@ -344,25 +374,25 @@ function drawOne(who) {
     }
     if (state.drawPile.length > 0) {
         const card = state.drawPile.pop();
-        if (who === 'player') state.playerHand.push(card);
-        else state.opponentHand.push(card);
+        if (who === 'player') {
+            state.playerHand.push(card);
+            state.selectedCardIndex = null;
+        } else state.opponentHand.push(card);
     }
     updateUI();
 }
 
 function endTurn() {
     if (state.isGameOver) return;
-
     if (state.effectStack.skips > 0) {
         state.effectStack.skips--;
         updateUI();
         if (state.currentTurn === 'opponent') setTimeout(opponentTurn, 1500);
         return;
     }
-
     state.currentTurn = state.currentTurn === 'player' ? 'opponent' : 'player';
+    state.selectedCardIndex = null;
     updateUI();
-
     if (state.currentTurn === 'opponent') setTimeout(opponentTurn, 1500);
 }
 
@@ -382,49 +412,82 @@ function isValidMove(card) {
     return card.suit === state.activeSuit || card.value === topCard.value;
 }
 
+function getSmartMargin(container, cardCount, scale = 1) {
+    if (cardCount <= 1) return 5;
+    const containerWidth = container.offsetWidth || window.innerWidth;
+    const availableWidth = containerWidth - 60;
+    let cardWidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--card-width'));
+    if (isNaN(cardWidth)) cardWidth = window.innerWidth < 900 ? 78 : 108;
+    const scaledCardWidth = cardWidth * scale;
+    
+    // Natural width with 10px gaps
+    const totalNeeded = cardCount * scaledCardWidth + (cardCount - 1) * 10;
+    
+    if (totalNeeded <= availableWidth) return 5;
+    
+    // Need overlap
+    const overlapSpace = availableWidth - (cardCount * scaledCardWidth);
+    let margin = (overlapSpace / (cardCount - 1)) / 2;
+    
+    // Hard limit so cards don't disappear
+    const minMargin = -(scaledCardWidth / 2) + 10;
+    return Math.max(margin, minMargin);
+}
+
 function updateUI() {
+    // 1. Player Hand
     elements.playerHand.innerHTML = '';
+    const playerMargin = getSmartMargin(elements.playerHand, state.playerHand.length);
+    elements.playerHand.classList.toggle('has-selection', state.selectedCardIndex !== null);
+
     state.playerHand.forEach((card, index) => {
         const cardEl = createCardElement(card);
+        const isSelected = state.selectedCardIndex === index;
         const playable = (state.currentTurn === 'player' && isValidMove(card) && !state.waitingForSuitSelection);
+        
+        cardEl.style.margin = `0 ${playerMargin}px`;
+        cardEl.style.zIndex = index;
+        if (isSelected) cardEl.classList.add('selected');
         
         if (!state.rules.hideHints) {
             if (playable) cardEl.classList.add('playable');
             else if (state.currentTurn === 'player') cardEl.classList.add('dimmed');
         }
         
-        cardEl.addEventListener('click', () => handlePlayCard(index));
+        cardEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            handlePlayCard(index);
+        });
         elements.playerHand.appendChild(cardEl);
     });
 
+    // 2. Opponent Hand
     elements.opponentHand.innerHTML = '';
-    state.opponentHand.forEach((card) => {
+    const opponentMargin = getSmartMargin(elements.opponentHand, state.opponentHand.length, 0.8);
+    state.opponentHand.forEach((card, index) => {
         const cardEl = document.createElement('div');
+        cardEl.className = 'card';
+        cardEl.style.margin = `0 ${opponentMargin}px`;
+        cardEl.style.zIndex = index;
         if (!state.rules.hideOpponentCards) {
-            cardEl.className = `card suit-${card.suit} val-${card.value}`;
+            cardEl.classList.add(`suit-${card.suit}`, `val-${card.value}`);
             cardEl.style.backgroundImage = `url('${card.image}')`;
         } else {
-            cardEl.className = 'card';
             cardEl.innerHTML = '<div class="card-back"></div>';
         }
         elements.opponentHand.appendChild(cardEl);
     });
 
+    // 3. Piles & Status
     elements.discardPile.innerHTML = '';
-    if (state.discardPile.length > 0) {
-        elements.discardPile.appendChild(createCardElement(state.discardPile[state.discardPile.length - 1]));
-    }
-
+    if (state.discardPile.length > 0) elements.discardPile.appendChild(createCardElement(state.discardPile[state.discardPile.length - 1]));
     elements.drawCount.innerText = state.drawPile.length;
     const canDraw = (state.currentTurn === 'player' && !state.waitingForSuitSelection);
-    
     if (!state.rules.hideHints) {
         if (state.rules.childMode && canDraw) elements.drawPile.classList.add('playable');
         else if (canDraw && !state.playerHand.some(c => isValidMove(c))) elements.drawPile.classList.add('playable');
         else elements.drawPile.classList.remove('playable');
-    } else {
-        elements.drawPile.classList.remove('playable');
-    }
+    } else elements.drawPile.classList.remove('playable');
 
     if (state.waitingForSuitSelection) elements.turnMessage.innerText = 'Vyber si novou barvu!';
     else if (state.currentTurn === 'player') {
