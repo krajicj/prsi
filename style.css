@@ -3,8 +3,8 @@
     --primary-color: #4caf50;
     --primary-hover: #45a049;
     --danger-color: #f44336;
-    --card-width: 110px;
-    --card-height: 188px; /* 110 * (615/360) approx */
+    --card-width: 108px;
+    --card-height: 187px;
     --card-radius: 8px;
     
     /* Card Suits */
@@ -29,8 +29,8 @@ body {
 
 @media (max-height: 700px), (max-width: 900px) {
     :root {
-        --card-width: 80px;
-        --card-height: 137px; /* 80 * 1.7 approx */
+        --card-width: 78px;
+        --card-height: 136px;
     }
     
     #game-board {
@@ -264,14 +264,17 @@ input:checked + .slider:before {
     width: var(--card-width);
     height: var(--card-height);
     border-radius: var(--card-radius);
+    border: 1px solid #000;
+    box-sizing: border-box;
     box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
     margin: 0 5px;
     position: relative;
-    background-size: cover;
+    background-size: 103%;
     background-repeat: no-repeat;
     background-position: center;
+    overflow: hidden;
 }
 
 .card:first-child {
@@ -299,8 +302,8 @@ input:checked + .slider:before {
     height: 100%;
     background: linear-gradient(135deg, #1e88e5 25%, #1565c0 25%, #1565c0 50%, #1e88e5 50%, #1e88e5 75%, #1565c0 75%, #1565c0 100%);
     background-size: 20px 20px;
-    border-radius: var(--card-radius);
-    border: 2px solid white;
+    border-radius: calc(var(--card-radius) - 1px);
+    border: 1px solid #000;
     box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
     position: absolute;
     top: 0;
@@ -416,13 +419,19 @@ input:checked + .slider:before {
     z-index: 1000;
     pointer-events: none;
     transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-    background-size: cover;
+    background-size: 103%;
     background-repeat: no-repeat;
     background-position: center;
     border-radius: var(--card-radius);
+    border: 1px solid #000;
+    box-sizing: border-box;
     box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
 }
 
 @media (max-height: 600px), (max-width: 800px) {
     /* No longer need background-size adjustment for flying-card here as we use contain */
 }
+
+ize adjustment for flying-card here as we use contain */
+}
+
