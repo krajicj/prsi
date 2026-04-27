@@ -66,22 +66,74 @@ const elements = {
     advancedSettings: document.getElementById('advanced-settings')
 };
 
+function saveSettings() {
+    const settings = {
+        childMode: document.getElementById('child-mode-toggle').checked,
+        aceSkips: document.getElementById('ace-skips-toggle').checked,
+        sevenDraws: document.getElementById('seven-draws-toggle').checked,
+        stacking: document.getElementById('stacking-toggle').checked,
+        jackChanges: document.getElementById('jack-changes-toggle').checked,
+        hideOpponentCards: document.getElementById('hide-opponent-cards-toggle').checked,
+        hideHints: document.getElementById('hide-hints-toggle').checked
+    };
+    localStorage.setItem('prsi-settings', JSON.stringify(settings));
+}
+
+function loadSettings() {
+    const saved = localStorage.getItem('prsi-settings');
+    if (saved) {
+        try {
+            const settings = JSON.parse(saved);
+            document.getElementById('child-mode-toggle').checked = settings.childMode;
+            document.getElementById('ace-skips-toggle').checked = settings.aceSkips;
+            document.getElementById('seven-draws-toggle').checked = settings.sevenDraws;
+            document.getElementById('stacking-toggle').checked = settings.stacking;
+            document.getElementById('jack-changes-toggle').checked = settings.jackChanges;
+            document.getElementById('hide-opponent-cards-toggle').checked = settings.hideOpponentCards;
+            document.getElementById('hide-hints-toggle').checked = settings.hideHints;
+            return;
+        } catch (e) {
+            console.error('Failed to parse settings');
+        }
+    }
+    // Defaults if no settings
+    document.getElementById('child-mode-toggle').checked = true;
+    document.getElementById('ace-skips-toggle').checked = false;
+    document.getElementById('seven-draws-toggle').checked = false;
+    document.getElementById('stacking-toggle').checked = false;
+    document.getElementById('jack-changes-toggle').checked = false;
+    document.getElementById('hide-opponent-cards-toggle').checked = false;
+    document.getElementById('hide-hints-toggle').checked = false;
+}
+
 // --- Initialization ---
 function init() {
-    document.getElementById('child-mode-toggle').checked = true;
-    document.getElementById('show-opponent-cards-toggle').checked = true;
-    document.getElementById('show-hints-toggle').checked = true;
+    loadSettings();
 
-    document.getElementById('child-mode-toggle').addEventListener('change', (e) => {
-        state.rules.childMode = e.target.checked;
-        if (state.rules.childMode) {
-            document.getElementById('ace-skips-toggle').checked = false;
-            document.getElementById('seven-draws-toggle').checked = false;
-            document.getElementById('stacking-toggle').checked = false;
-            document.getElementById('jack-changes-toggle').checked = false;
-            document.getElementById('show-opponent-cards-toggle').checked = true;
-            document.getElementById('show-hints-toggle').checked = true;
+    const childModeToggle = document.getElementById('child-mode-toggle');
+    const otherToggles = [
+        document.getElementById('ace-skips-toggle'),
+        document.getElementById('seven-draws-toggle'),
+        document.getElementById('stacking-toggle'),
+        document.getElementById('jack-changes-toggle'),
+        document.getElementById('hide-opponent-cards-toggle'),
+        document.getElementById('hide-hints-toggle')
+    ];
+
+    childModeToggle.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            otherToggles.forEach(t => t.checked = false);
         }
+        saveSettings();
+    });
+
+    otherToggles.forEach(toggle => {
+        toggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                childModeToggle.checked = false;
+            }
+            saveSettings();
+        });
     });
 
     document.getElementById('start-game-btn').addEventListener('click', startGame);
@@ -104,8 +156,8 @@ function startGame() {
     state.rules.sevenDraws = document.getElementById('seven-draws-toggle').checked;
     state.rules.stacking = document.getElementById('stacking-toggle').checked;
     state.rules.jackChanges = document.getElementById('jack-changes-toggle').checked;
-    state.rules.showOpponentCards = document.getElementById('show-opponent-cards-toggle').checked;
-    state.rules.showHints = document.getElementById('show-hints-toggle').checked;
+    state.rules.hideOpponentCards = document.getElementById('hide-opponent-cards-toggle').checked;
+    state.rules.hideHints = document.getElementById('hide-hints-toggle').checked;
 
     state.deck = createDeck();
     shuffle(state.deck);
@@ -338,7 +390,7 @@ function updateUI() {
         const cardEl = createCardElement(card);
         const playable = (state.currentTurn === 'player' && isValidMove(card) && !state.waitingForSuitSelection);
         
-        if (state.rules.showHints) {
+        if (!state.rules.hideHints) {
             if (playable) cardEl.classList.add('playable');
             else if (state.currentTurn === 'player') cardEl.classList.add('dimmed');
         }
@@ -350,7 +402,7 @@ function updateUI() {
     elements.opponentHand.innerHTML = '';
     state.opponentHand.forEach((card) => {
         const cardEl = document.createElement('div');
-        if (state.rules.showOpponentCards) {
+        if (!state.rules.hideOpponentCards) {
             cardEl.className = `card suit-${card.suit} val-${card.value}`;
             cardEl.style.backgroundImage = `url('${card.image}')`;
         } else {
@@ -368,7 +420,7 @@ function updateUI() {
     elements.drawCount.innerText = state.drawPile.length;
     const canDraw = (state.currentTurn === 'player' && !state.waitingForSuitSelection);
     
-    if (state.rules.showHints) {
+    if (!state.rules.hideHints) {
         if (state.rules.childMode && canDraw) elements.drawBtn.classList.add('playable');
         else if (canDraw && !state.playerHand.some(c => isValidMove(c))) elements.drawBtn.classList.add('playable');
         else elements.drawBtn.classList.remove('playable');
