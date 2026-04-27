@@ -1,5 +1,14 @@
 :root {
     --bg-color: #f0f8ff;
+    --bg-gradient: radial-gradient(circle, #f0f8ff 0%, #e0f0ff 100%);
+    --panel-bg: white;
+    --setting-card-bg: #f8f9fa;
+    --setting-card-main-bg: #e8f5e9;
+    --setting-card-border: #eee;
+    --text-color: #333;
+    --text-muted: #666;
+    --hud-bg: rgba(255, 255, 255, 0.7);
+    
     --primary-color: #4caf50;
     --primary-hover: #45a049;
     --danger-color: #f44336;
@@ -14,15 +23,29 @@
     --acorns-color: #795548;
 }
 
+.dark-mode {
+    --bg-color: #1a1a2e;
+    --bg-gradient: radial-gradient(circle, #1a1a2e 0%, #16213e 100%);
+    --panel-bg: #22223b;
+    --setting-card-bg: #2a2a40;
+    --setting-card-main-bg: #1b4332;
+    --setting-card-border: #444;
+    --text-color: #f8f9fa;
+    --text-muted: #adb5bd;
+    --hud-bg: rgba(34, 34, 59, 0.8);
+}
+
 body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background-color: var(--bg-color);
+    color: var(--text-color);
     overflow: hidden;
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 @media (max-height: 700px), (max-width: 900px) {
@@ -71,7 +94,7 @@ body {
     align-items: center;
     justify-content: center;
     position: relative;
-    background: radial-gradient(circle, #f0f8ff 0%, #e0f0ff 100%);
+    background: var(--bg-gradient);
 }
 
 .hidden {
@@ -80,7 +103,7 @@ body {
 
 /* Panels */
 .panel {
-    background: white;
+    background: var(--panel-bg);
     padding: 2.5rem;
     border-radius: 32px;
     box-shadow: 0 20px 50px rgba(0,0,0,0.1);
@@ -93,6 +116,7 @@ body {
     flex-direction: column;
     gap: 20px;
     position: relative; /* For absolute corner icons */
+    transition: background-color 0.3s;
 }
 
 .corner-icon {
@@ -101,6 +125,29 @@ body {
     height: 70px;
     mix-blend-mode: multiply;
     pointer-events: none;
+}
+
+.dark-mode .corner-icon {
+    filter: invert(1) hue-rotate(180deg) brightness(1.1) contrast(1.1);
+    mix-blend-mode: screen; /* Makes black background transparent */
+}
+
+.visual-settings {
+    margin-top: 10px;
+    border-top: 1px solid var(--setting-card-border);
+    padding-top: 20px;
+}
+
+.visual-settings .setting-card {
+    background: transparent;
+    border: none;
+    padding: 5px 16px;
+}
+
+.dark-mode #game-status {
+    background: rgba(30, 30, 50, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
 
 .corner-icon.top-left {
@@ -121,12 +168,12 @@ body {
 .welcome-header h1 {
     font-size: 2.5rem;
     margin: 0;
-    color: #333;
+    color: var(--text-color);
     font-weight: 800;
 }
 
 .welcome-header p {
-    color: #666;
+    color: var(--text-muted);
     margin: 5px 0 0 0;
     font-size: 1.2rem;
 }
@@ -139,8 +186,8 @@ body {
 }
 
 .setting-card {
-    background: #f8f9fa;
-    border: 2px solid #eee;
+    background: var(--setting-card-bg);
+    border: 2px solid var(--setting-card-border);
     padding: 12px 16px;
     border-radius: 16px;
     display: flex;
@@ -150,8 +197,8 @@ body {
 }
 
 .setting-card.main-mode {
-    background: #e8f5e9;
-    border-color: #c8e6c9;
+    background: var(--setting-card-main-bg);
+    border-color: var(--setting-card-border);
     padding: 16px;
 }
 
@@ -162,13 +209,13 @@ body {
 
 .setting-label {
     font-weight: 700;
-    color: #333;
+    color: var(--text-color);
     font-size: 1rem;
 }
 
 .setting-desc {
     font-size: 0.85rem;
-    color: #666;
+    color: var(--text-muted);
 }
 
 .advanced-grid {
@@ -429,7 +476,7 @@ input:checked + .slider:before {
 /* Suit picker */
 #suit-picker {
     position: absolute;
-    background: rgba(255,255,255,0.95);
+    background: var(--panel-bg);
     padding: 20px;
     border-radius: 20px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.2);
@@ -438,6 +485,7 @@ input:checked + .slider:before {
     display: flex;
     flex-direction: column;
     align-items: center;
+    color: var(--text-color);
 }
 
 .color-options {
@@ -474,14 +522,25 @@ input:checked + .slider:before {
 #game-status {
     text-align: center;
     font-size: 1.2rem;
-    background: rgba(255,255,255,0.7);
-    padding: 10px 20px;
-    border-radius: 15px;
+    background: white; /* Always white for readability */
+    color: #333; /* Always dark text */
+    padding: 12px 25px;
+    border-radius: 20px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 5px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    border: 2px solid rgba(0,0,0,0.05);
+    transition: transform 0.3s;
+    font-weight: 600;
+}
+
+/* In dark mode we just make the shadow stronger so it pops from the dark board */
+.dark-mode #game-status {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    background: #f8f9fa; /* Slightly off-white to be less blinding */
 }
 
 .status-icon {
@@ -519,6 +578,7 @@ input:checked + .slider:before {
     justify-content: center;
     opacity: 0.9;
     transition: opacity 0.2s, transform 0.2s;
+    color: var(--text-color);
 }
 
 #menu-btn:hover {

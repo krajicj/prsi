@@ -66,6 +66,11 @@ const elements = {
     advancedSettings: document.getElementById('advanced-settings')
 };
 
+function applyDarkMode() {
+    const isDark = document.getElementById('dark-mode-toggle').checked;
+    document.body.classList.toggle('dark-mode', isDark);
+}
+
 function saveSettings() {
     const settings = {
         childMode: document.getElementById('child-mode-toggle').checked,
@@ -74,9 +79,11 @@ function saveSettings() {
         stacking: document.getElementById('stacking-toggle').checked,
         jackChanges: document.getElementById('jack-changes-toggle').checked,
         hideOpponentCards: document.getElementById('hide-opponent-cards-toggle').checked,
-        hideHints: document.getElementById('hide-hints-toggle').checked
+        hideHints: document.getElementById('hide-hints-toggle').checked,
+        darkMode: document.getElementById('dark-mode-toggle').checked
     };
     localStorage.setItem('prsi-settings', JSON.stringify(settings));
+    applyDarkMode();
 }
 
 function loadSettings() {
@@ -91,6 +98,8 @@ function loadSettings() {
             document.getElementById('jack-changes-toggle').checked = settings.jackChanges;
             document.getElementById('hide-opponent-cards-toggle').checked = settings.hideOpponentCards;
             document.getElementById('hide-hints-toggle').checked = settings.hideHints;
+            document.getElementById('dark-mode-toggle').checked = settings.darkMode || false;
+            applyDarkMode();
             return;
         } catch (e) {
             console.error('Failed to parse settings');
@@ -104,6 +113,7 @@ function init() {
     loadSettings();
 
     const childModeToggle = document.getElementById('child-mode-toggle');
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
     const otherToggles = [
         document.getElementById('ace-skips-toggle'),
         document.getElementById('seven-draws-toggle'),
@@ -124,6 +134,8 @@ function init() {
             saveSettings();
         });
     });
+
+    darkModeToggle.addEventListener('change', saveSettings);
 
     document.getElementById('start-game-btn').addEventListener('click', startGame);
     document.getElementById('restart-btn').addEventListener('click', startGame);
