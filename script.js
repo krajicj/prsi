@@ -56,7 +56,6 @@ const elements = {
     discardPile: document.getElementById('discard-pile'),
     drawPile: document.getElementById('draw-pile'),
     drawCount: document.getElementById('draw-count'),
-    drawBtn: document.getElementById('draw-btn'),
     turnMessage: document.getElementById('turn-message'),
     suitPicker: document.getElementById('suit-picker'),
     overlay: document.getElementById('overlay'),
@@ -138,7 +137,6 @@ function init() {
 
     document.getElementById('start-game-btn').addEventListener('click', startGame);
     document.getElementById('restart-btn').addEventListener('click', startGame);
-    document.getElementById('draw-btn').addEventListener('click', () => handleDraw('player'));
     document.getElementById('draw-pile').addEventListener('click', () => handleDraw('player'));
     document.getElementById('menu-btn').addEventListener('click', () => {
         elements.gameBoard.classList.add('hidden');
@@ -421,11 +419,11 @@ function updateUI() {
     const canDraw = (state.currentTurn === 'player' && !state.waitingForSuitSelection);
     
     if (!state.rules.hideHints) {
-        if (state.rules.childMode && canDraw) elements.drawBtn.classList.add('playable');
-        else if (canDraw && !state.playerHand.some(c => isValidMove(c))) elements.drawBtn.classList.add('playable');
-        else elements.drawBtn.classList.remove('playable');
+        if (state.rules.childMode && canDraw) elements.drawPile.classList.add('playable');
+        else if (canDraw && !state.playerHand.some(c => isValidMove(c))) elements.drawPile.classList.add('playable');
+        else elements.drawPile.classList.remove('playable');
     } else {
-        elements.drawBtn.classList.remove('playable');
+        elements.drawPile.classList.remove('playable');
     }
 
     if (state.waitingForSuitSelection) elements.turnMessage.innerText = 'Vyber si novou barvu!';
