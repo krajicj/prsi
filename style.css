@@ -56,6 +56,7 @@ body {
     
     #game-board {
         padding: 5px;
+        height: 70% !important;
     }
 
     #center-piles {
