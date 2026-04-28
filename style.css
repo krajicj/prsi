@@ -141,8 +141,9 @@ body {
 }
 
 .dark-mode .corner-icon {
-    filter: invert(1) hue-rotate(180deg) brightness(1.1) contrast(1.1);
+    filter: invert(1) hue-rotate(180deg);
     mix-blend-mode: screen; /* Makes black background transparent */
+    opacity: 0.85;
 }
 
 .visual-settings {
@@ -235,12 +236,53 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.advanced-grid.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
 }
 
 @media (max-width: 600px) {
     .advanced-grid {
         grid-template-columns: 1fr;
     }
+}
+
+.rules-toggle-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px 5px;
+    cursor: pointer;
+    border-bottom: 2px solid var(--setting-card-border);
+    margin-top: 5px;
+    margin-bottom: 5px;
+    transition: color 0.2s;
+}
+
+.rules-toggle-btn:hover {
+    color: var(--primary-color);
+}
+
+.rules-toggle-icon {
+    font-size: 0.9rem;
+    transition: transform 0.3s ease;
+}
+
+.rules-toggle-btn.open .rules-toggle-icon {
+    transform: rotate(180deg);
 }
 
 .settings-actions {

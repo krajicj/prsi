@@ -217,6 +217,21 @@ function init() {
 
     darkModeToggle.addEventListener('change', saveSettings);
 
+    document.getElementById('rules-toggle-btn').addEventListener('click', (e) => {
+        const btn = e.currentTarget;
+        const grid = document.getElementById('advanced-settings');
+        
+        btn.classList.toggle('open');
+        grid.classList.toggle('collapsed');
+        
+        if (grid.classList.contains('collapsed')) {
+            grid.style.maxHeight = '0px';
+        } else {
+            // Set max-height large enough to contain the grid for the transition
+            grid.style.maxHeight = grid.scrollHeight + 'px';
+        }
+    });
+
     document.getElementById('start-game-btn').addEventListener('click', startGame);
     document.getElementById('restart-btn').addEventListener('click', startGame);
     document.getElementById('draw-pile').addEventListener('click', () => handleDraw('player'));
