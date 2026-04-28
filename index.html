@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prší pro děti</title>
     <link rel="icon" type="image/png" href="assets/favicon.png">
-    <link rel="stylesheet" href="style.css?v=202604280004">
+    <link rel="stylesheet" href="style.css?v=202604280008">
 </head>
 <body>
     <div id="game-container">
@@ -32,53 +32,57 @@
                     </label>
                 </div>
 
-                <button id="rules-toggle-btn" class="rules-toggle-btn">
-                    <span>Pokročilá pravidla</span>
-                    <span class="rules-toggle-icon">▼</span>
-                </button>
+                <div class="setting-card rules-container-card">
+                    <div id="rules-toggle-btn" class="rules-toggle-header">
+                        <div class="setting-info">
+                            <span class="setting-label">Pokročilá pravidla</span>
+                        </div>
+                        <span class="rules-toggle-icon">▼</span>
+                    </div>
 
-                <div id="advanced-settings" class="advanced-grid collapsed">
-                    <div class="setting-card">
-                        <span class="setting-label">Eso staví</span>
-                        <label class="switch">
-                            <input type="checkbox" id="ace-skips-toggle">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                    <div class="setting-card">
-                        <span class="setting-label">7 bere dvě</span>
-                        <label class="switch">
-                            <input type="checkbox" id="seven-draws-toggle">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                    <div class="setting-card">
-                        <span class="setting-label">Přebíjení</span>
-                        <label class="switch">
-                            <input type="checkbox" id="stacking-toggle">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                    <div class="setting-card">
-                        <span class="setting-label">Měnění barvy</span>
-                        <label class="switch">
-                            <input type="checkbox" id="jack-changes-toggle">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                    <div class="setting-card">
-                        <span class="setting-label">Skrýt karty PC</span>
-                        <label class="switch">
-                            <input type="checkbox" id="hide-opponent-cards-toggle">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                    <div class="setting-card">
-                        <span class="setting-label">Skrýt nápovědy</span>
-                        <label class="switch">
-                            <input type="checkbox" id="hide-hints-toggle">
-                            <span class="slider round"></span>
-                        </label>
+                    <div id="advanced-settings" class="advanced-grid collapsed">
+                        <div class="inner-setting-row">
+                            <span class="setting-label">Eso staví</span>
+                            <label class="switch">
+                                <input type="checkbox" id="ace-skips-toggle">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="inner-setting-row">
+                            <span class="setting-label">7 bere dvě</span>
+                            <label class="switch">
+                                <input type="checkbox" id="seven-draws-toggle">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="inner-setting-row">
+                            <span class="setting-label">Přebíjení</span>
+                            <label class="switch">
+                                <input type="checkbox" id="stacking-toggle">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="inner-setting-row">
+                            <span class="setting-label">Měnění barvy</span>
+                            <label class="switch">
+                                <input type="checkbox" id="jack-changes-toggle">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="inner-setting-row">
+                            <span class="setting-label">Skrýt karty PC</span>
+                            <label class="switch">
+                                <input type="checkbox" id="hide-opponent-cards-toggle">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="inner-setting-row">
+                            <span class="setting-label">Skrýt nápovědy</span>
+                            <label class="switch">
+                                <input type="checkbox" id="hide-hints-toggle">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -151,6 +155,6 @@
         </div>
     </div>
 
-    <script src="script.js?v=202604280004"></script>
+    <script src="script.js?v=202604280008"></script>
 </body>
 </html>
