@@ -204,7 +204,11 @@ function init() {
     ];
 
     childModeToggle.addEventListener('change', (e) => {
-        if (e.target.checked) otherToggles.forEach(t => t.checked = false);
+        if (e.target.checked) {
+            otherToggles.forEach(t => t.checked = false);
+        } else {
+            otherToggles.forEach(t => t.checked = true);
+        }
         saveSettings();
     });
 
