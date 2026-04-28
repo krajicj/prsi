@@ -48,7 +48,7 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-@media (max-height: 700px), (max-width: 900px) {
+@media (max-height: 850px), (max-width: 900px) {
     :root {
         --card-width: 78px;
         --card-height: 136px;
@@ -100,7 +100,8 @@ body {
 
 #game-container {
     width: 100vw;
-    height: 100vh;
+    height: 100vh; /* fallback for older browsers */
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -292,7 +293,7 @@ body {
     opacity: 0.8;
 }
 
-@media (max-height: 700px), (max-width: 900px) {
+@media (max-height: 850px), (max-width: 900px) {
     .panel {
         padding: 1.2rem !important;
         gap: 10px !important;
