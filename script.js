@@ -618,9 +618,9 @@ function createCardElement(card) {
 
 function checkWin() {
     if (state.playerHand.length === 0) {
-        showResult('<span class="result-emoji">🎉</span>Vyhrála jsi!<br><span style="font-size: 1.2rem; font-weight: normal; color: #4caf50;">Jsi šikulka!</span>');
+        showResult('<span class="result-emoji">🎉</span>Vyhrála jsi!<br><span style="font-size: 2.5rem; font-weight: normal; color: #4caf50;">👍</span>');
     } else if (state.opponentHand.length === 0) {
-        showResult('<span class="result-emoji">🤖</span>PC vyhrál<br><span style="font-size: 1.2rem; font-weight: normal; color: #f44336;">Zkus to znovu!</span>');
+        showResult('<span class="result-emoji">😢</span>PC vyhrál<br><span style="font-size: 2.5rem; font-weight: normal; color: #f44336;">👎</span>');
     }
 }
 
